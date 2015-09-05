@@ -5,8 +5,9 @@ A Laravel package for applications that wish to use Tokenly Accounts for user au
 
 ### Add the Laravel package via composer
 
+```
 composer require tokenly/accounts-client
-
+```
 
 
 ### Add Service Provider
