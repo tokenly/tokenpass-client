@@ -90,14 +90,14 @@ class AccountController extends Controller
             $email_is_confirmed = $oauth_user->user['email_is_confirmed'];
 
             // find an existing user based on the credentials provided
-            $existing_user = User::where('tokenly_uuid', $tokenly_uuid);
+            $existing_user = User::where('tokenly_uuid', $tokenly_uuid)->first();
 
             // if an existing user wasn't found, we might need to find a user to merge into
-            $mergable_user = ($existing_user ? null : User::where('username', $username)->where('tokenly_uuid', null));
+            $mergable_user = ($existing_user ? null : User::where('username', $username)->orWhere('email', $email)->where('tokenly_uuid', null)->first());
 
             if ($existing_user) {
                 // update the user
-                $existing_user->update(['oauth_token' => $oauth_token, 'name' => $name, 'email' => $email, /* etc */ ]);
+                $existing_user->update(['tokenly_uuid' => $tokenly_uuid, 'oauth_token' => $oauth_token, 'name' => $name, 'username' => $username, 'email' => $email, /* etc */ ]);
 
                 // login
                 Auth::login($existing_user);
@@ -110,17 +110,18 @@ class AccountController extends Controller
                 }
 
                 // update if needed
-                $mergable_user->update(['name' => $name, 'email' => $email, /* etc */ ]);
+                $mergable_user->update(['tokenly_uuid' => $tokenly_uuid, 'oauth_token' => $oauth_token, 'name' => $name, 'username' => $username, 'email' => $email, /* etc */ ]);
 
                 // login
                 Auth::login($mergable_user);
 
             } else {
                 // no user was found - create a new user based on the information we received
+                //make sure these fields are all "fillable" in your User model
                 $new_user = User::create(['tokenly_uuid' => $tokenly_uuid, 'oauth_token' => $oauth_token, 'name' => $name, 'username' => $username, 'email' => $email, /* etc */ ]);
 
                 // login
-                Auth::login($mergable_user);
+                Auth::login($new_user);
             }
 
 
