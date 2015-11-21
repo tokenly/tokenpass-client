@@ -26,9 +26,9 @@ class AccountsAPI
 	
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
-        $api_path = $this->base_path.'/'.ltrim($path, '/');
+        $api_path = env('TOKENLY_ACCOUNTS_PROVIDER_HOST').'/api/v1/'.ltrim($path, '/');
 
-        $client = new GuzzleClient(['base_url' => env('TOKENLY_ACCOUNTS_PROVIDER_HOST').'/api/v1']);
+        $client = new GuzzleClient(['base_url' => $api_path]);
 
         if ($method == 'GET') {
             $data = ['query' => $parameters];
