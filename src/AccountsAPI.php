@@ -24,6 +24,20 @@ class AccountsAPI
 		return $call['result'];
 	}
 	
+	public function getPublicAddresses($username)
+	{
+		try{
+			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username);
+		}
+		catch(Exception $e){
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
         $api_path = env('TOKENLY_ACCOUNTS_PROVIDER_HOST').'/api/v1/'.ltrim($path, '/');
