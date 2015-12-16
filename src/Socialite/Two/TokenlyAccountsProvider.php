@@ -14,7 +14,7 @@ class TokenlyAccountsProvider extends AbstractProvider implements ProviderInterf
      *
      * @var array
      */
-    protected $scopes = ['user'];
+    protected $scopes = ['user', 'tca'];
 
     protected $base_url = 'https://accounts.tokenly.com';
 
