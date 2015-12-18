@@ -12,6 +12,7 @@ class AccountsAPI
 	
 	public function checkTokenAccess($username, $rules = array())
 	{
+		$rules['client_id'] = env('TOKENLY_ACCOUNTS_CLIENT_ID');
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/check/'.$username, $rules);
 		}
@@ -27,9 +28,25 @@ class AccountsAPI
 	public function getPublicAddresses($username)
 	{
 		try{
-			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username);
+			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, array('client_id' => env('TOKENLY_ACCOUNTS_CLIENT_ID')));
 		}
 		catch(Exception $e){
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
+	public function checkAddressTokenAccess($address, $sig, $rules = array())
+	{
+		$body = $rules;
+		$body['sig'] = $sig;
+		try{
+			$call = $this->fetchFromAPI('GET', 'tca/check-address/'.$address, $body);
+		}
+		catch(Exeption $e){
 			return false;
 		}
 		if(!isset($call['result'])){
