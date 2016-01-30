@@ -86,7 +86,6 @@ class AccountsAPI
 
                 if ($json and isset($json['error'])) {
                     $auth_exception = new Exception($json['error'], $code);
-                    $auth_exception->setJSONResponse($json);
                     throw $auth_exception;
                 }
             }
@@ -100,7 +99,6 @@ class AccountsAPI
 
         if ($json and isset($json['error'])) {
             $auth_exception = new Exception($json['error'], $response->getStatusCode());
-            $auth_exception->setJSONResponse($json);
             throw $auth_exception;
         }
 
