@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Account;
 
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
-use App\Http\Controllers\Controller;
-use App\Models\User;
 use Tokenly\AccountsClient\Facade\TokenlyAccounts;
 
 class AccountController extends Controller
@@ -74,7 +74,7 @@ class AccountController extends Controller
             // check for an error returned from Tokenly Accounts
             $error_description = TokenlyAccounts::checkForError($request);
             if ($error_description) {
-                return view('authorization-failed', ['error_msg' => $error_description]);
+                return view('account.authorization-failed', ['error_msg' => $error_description]);
             }
 
 
@@ -129,7 +129,7 @@ class AccountController extends Controller
 
         } catch (Exception $e) {
             // some unexpected error happened
-            return view('authorization-failed', ['error_msg' => 'Failed to authenticate this user.']);
+            return view('account.authorization-failed', ['error_msg' => 'Failed to authenticate this user.']);
         }
     }
 
@@ -177,7 +177,7 @@ class AccountController extends Controller
             return view('account.sync', ['synced' => $synced, 'user' => $logged_in_user, ]);
 
         } catch (Exception $e) {
-            return view('sync-failed', ['error_msg' => 'Failed to sync this user.']);
+            return view('account.sync-failed', ['error_msg' => 'Failed to sync this user.']);
         }
     }
 

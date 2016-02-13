@@ -23,7 +23,7 @@ class TokenlyAccountsServiceProvider extends ServiceProvider
             return new TokenlyAccounts();
         });
 
-        $this->app->bindShared('Laravel\Socialite\Contracts\Factory', function ($app) {
+        $this->app->bind('Laravel\Socialite\Contracts\Factory', function ($app) {
             return new TokenlyAccountsSocialiteManager($app);
         });
     }
