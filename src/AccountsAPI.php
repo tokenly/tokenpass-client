@@ -55,6 +55,28 @@ class AccountsAPI
 		return $call['result'];
 	}
 	
+	public function registerAccount($username, $password, $email, $name = '')
+	{
+		$params['client_id'] = env('TOKENLY_ACCOUNTS_CLIENT_ID');	
+		$params['username'] = $username;
+		$params['password'] = $password;
+		$params['email'] = $email;
+		$params['name'] = $name;	
+		try{
+			$call = $this->fetchFromAPI('POST', 'register', $params);
+		}
+		catch(Exception $e){
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		if(isset($call['error']) AND trim($call['error']) != ''){
+			throw new \Exception($call['error']);
+		}
+		return $call['result'];
+	}
+	
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
         $api_path = env('TOKENLY_ACCOUNTS_PROVIDER_HOST').'/api/v1/'.ltrim($path, '/');
