@@ -16,14 +16,14 @@ class AccountsAPI
 	{
 		if(function_exists('env')){
 			$this->client_id = env('TOKENLY_ACCOUNTS_CLIENT_ID');
-			$this->api_url = env('TOKENLY_ACCOUNTS_PROVIDER_URL');
+			$this->api_url = env('TOKENLY_ACCOUNTS_PROVIDER_HOST');
 		}
 		else{
 			if(defined('TOKENLY_ACCOUNTS_CLIENT_ID')){
 				$this->client_id = TOKENLY_ACCOUNTS_CLIENT_ID;
 			}
-			if(defined('TOKENLY_ACCOUNTS_PROVIDER_URL')){
-				$this->api_url = TOKENLY_ACCOUNTS_PROVIDER_URL;
+			if(defined('TOKENLY_ACCOUNTS_PROVIDER_HOST')){
+				$this->api_url = TOKENLY_ACCOUNTS_PROVIDER_HOST;
 			}
 		}
 	}
