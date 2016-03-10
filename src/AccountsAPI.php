@@ -9,10 +9,28 @@ use GuzzleHttp\Exception\RequestException;
 
 class AccountsAPI
 {
+	public $client_id = false;
+	public $api_url = false;
+	
+	function __construct()
+	{
+		if(function_exists('env')){
+			$this->client_id = env('TOKENLY_ACCOUNTS_CLIENT_ID');
+			$this->api_url = env('TOKENLY_ACCOUNTS_PROVIDER_URL');
+		}
+		else{
+			if(defined('TOKENLY_ACCOUNTS_CLIENT_ID')){
+				$this->client_id = TOKENLY_ACCOUNTS_CLIENT_ID;
+			}
+			if(defined('TOKENLY_ACCOUNTS_PROVIDER_URL')){
+				$this->api_url = TOKENLY_ACCOUNTS_PROVIDER_URL;
+			}
+		}
+	}
 	
 	public function checkTokenAccess($username, $rules = array())
 	{
-		$rules['client_id'] = env('TOKENLY_ACCOUNTS_CLIENT_ID');
+		$rules['client_id'] = $this->client_id;
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/check/'.$username, $rules);
 		}
@@ -28,7 +46,7 @@ class AccountsAPI
 	public function getPublicAddresses($username)
 	{
 		try{
-			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, array('client_id' => env('TOKENLY_ACCOUNTS_CLIENT_ID')));
+			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, array('client_id' => $this->client_id));
 		}
 		catch(Exception $e){
 			return false;
@@ -57,7 +75,7 @@ class AccountsAPI
 	
 	public function registerAccount($username, $password, $email, $name = '')
 	{
-		$params['client_id'] = env('TOKENLY_ACCOUNTS_CLIENT_ID');	
+		$params['client_id'] = $this->client_id;	
 		$params['username'] = $username;
 		$params['password'] = $password;
 		$params['email'] = $email;
@@ -79,7 +97,7 @@ class AccountsAPI
 	
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
-        $api_path = env('TOKENLY_ACCOUNTS_PROVIDER_HOST').'/api/v1/'.ltrim($path, '/');
+        $api_path = $this->api_url.'/api/v1/'.ltrim($path, '/');
 
         $client = new GuzzleClient(['base_url' => $api_path]);
 
