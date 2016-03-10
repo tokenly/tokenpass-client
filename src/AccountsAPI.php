@@ -80,14 +80,9 @@ class AccountsAPI
 		$params['password'] = $password;
 		$params['email'] = $email;
 		$params['name'] = $name;	
-		try{
-			$call = $this->fetchFromAPI('POST', 'register', $params);
-		}
-		catch(Exception $e){
-			return false;
-		}
+		$call = $this->fetchFromAPI('POST', 'register', $params);
 		if(!isset($call['result'])){
-			return false;
+			throw new \Exception('Unknown error registering user');
 		}
 		if(isset($call['error']) AND trim($call['error']) != ''){
 			throw new \Exception($call['error']);
