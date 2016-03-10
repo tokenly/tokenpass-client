@@ -90,6 +90,23 @@ class AccountsAPI
 		return $call['result'];
 	}
 	
+	public function updateAccount($user_id, $token, $password, $data = array())
+	{
+		$params = $data;
+		$params['client_id'] = $this->client_id;	
+		$params['user_id'] = $user_id;
+		$params['token'] = $token;
+		$params['current_password'] = $password;
+		$call = $this->fetchFromAPI('PATCH', 'update', $params);
+		if(!isset($call['result'])){
+			throw new \Exception('Unknown error updating user');
+		}
+		if(isset($call['error']) AND trim($call['error']) != ''){
+			throw new \Exception($call['error']);
+		}
+		return true;
+	}
+	
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
         $api_path = $this->api_url.'/api/v1/'.ltrim($path, '/');
