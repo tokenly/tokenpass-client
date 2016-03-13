@@ -46,6 +46,20 @@ class AccountsAPI
 	public function getPublicAddresses($username)
 	{
 		try{
+			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, array('client_id' => $this->client_id, 'public' => 1));
+		}
+		catch(Exception $e){
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
+	public function getAddresses($username)
+	{
+		try{
 			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, array('client_id' => $this->client_id));
 		}
 		catch(Exception $e){
