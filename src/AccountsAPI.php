@@ -4,8 +4,8 @@ namespace Tokenly\AccountsClient;
 
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Http\Request;
+use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Psr7\Request;
 
 class AccountsAPI
 {
@@ -92,32 +92,35 @@ class AccountsAPI
         $params['client_id'] = $this->client_id;
         $params['username'] = $username;
         $params['password'] = $password;
-        $call = $this->fetchFromAPI('POST', 'login', $params);
-        if(!isset($call['result'])){
+        $result = $this->fetchFromAPI('POST', 'login', $params);
+        if (isset($result['error']) AND trim($result['error']) != ''){
+            throw new \Exception($result['error']);
+        }
+
+        if (!isset($result['id'])){
             throw new \Exception('Unknown error logging in user');
         }
-        if(isset($call['error']) AND trim($call['error']) != ''){
-            throw new \Exception($call['error']);
-        }
-        return $call['result'];
+
+        return $result;
     }
 
 
 	public function registerAccount($username, $password, $email, $name = '')
 	{
 		$params['client_id'] = $this->client_id;	
-		$params['username'] = $username;
-		$params['password'] = $password;
-		$params['email'] = $email;
-		$params['name'] = $name;	
-		$call = $this->fetchFromAPI('POST', 'register', $params);
-		if(!isset($call['result'])){
-			throw new \Exception('Unknown error registering user');
-		}
-		if(isset($call['error']) AND trim($call['error']) != ''){
-			throw new \Exception($call['error']);
-		}
-		return $call['result'];
+        $params['username'] = $username;
+        $params['password'] = $password;
+        $params['email'] = $email;
+
+        $result = $this->fetchFromAPI('POST', 'register', $params);
+
+        if(isset($result['error']) AND trim($result['error']) != ''){
+            throw new \Exception($result['error']);
+        }
+        if(!isset($result['result'])){
+            throw new \Exception('Unknown error registering user');
+        }
+        return $result['result'];
 	}
 	
 	public function updateAccount($user_id, $token, $password, $data = array())
@@ -139,28 +142,31 @@ class AccountsAPI
 	
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
-        $api_path = $this->api_url.'/api/v1/'.ltrim($path, '/');
+        $url = $this->api_url.'/api/v1/'.ltrim($path, '/');
 
-        $client = new GuzzleClient(['base_url' => $api_path]);
+        $client = new GuzzleClient(['http_errors' => true]);
 
+        $headers = [];
         if ($method == 'GET') {
-            $data = ['query' => $parameters];
-
+            $url .= '?'.http_build_query($parameters);
+            $body = null;
         } else {
             $data = ['body' => $parameters];
+            $headers['Content-Type'] = 'application/json';
+            $body = json_encode($parameters);
         }
-        $request = $client->createRequest($method, $api_path, $data);
+        $request = new Request($method, $url, $headers, $body);
 
         // send request
         try {
             $response = $client->send($request);
-        } catch (RequestException $e) {
+        } catch (BadResponseException $e) {
             if ($response = $e->getResponse()) {
                 // interpret the response and error message
                 $code = $response->getStatusCode();
 
                 try {
-                    $json = $response->json();
+                    $json = json_decode($response->getBody(), true);
                 } catch (Exception $parse_json_exception) {
                     // could not parse json
                     $json = null;
@@ -176,7 +182,7 @@ class AccountsAPI
             throw $e;
         }
 
-        $json = $response->json();
+        $json = json_decode($response->getBody(), true);
         if (!is_array($json)) { throw new Exception("Unexpected response", 1); }
 
         if ($json and isset($json['error'])) {
