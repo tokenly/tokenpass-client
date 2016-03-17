@@ -3,9 +3,9 @@
 namespace Tokenly\AccountsClient;
 
 use Exception;
+use Guzzle\Http\Client as GuzzleClient;
+use Guzzle\Http\Exception\RequestException;
 use Illuminate\Http\Request;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\RequestException;
 
 class AccountsAPI
 {
@@ -87,6 +87,22 @@ class AccountsAPI
 		return $call['result'];
 	}
 	
+    public function login($username, $password)
+    {
+        $params['client_id'] = $this->client_id;
+        $params['username'] = $username;
+        $params['password'] = $password;
+        $call = $this->fetchFromAPI('POST', 'login', $params);
+        if(!isset($call['result'])){
+            throw new \Exception('Unknown error logging in user');
+        }
+        if(isset($call['error']) AND trim($call['error']) != ''){
+            throw new \Exception($call['error']);
+        }
+        return $call['result'];
+    }
+
+
 	public function registerAccount($username, $password, $email, $name = '')
 	{
 		$params['client_id'] = $this->client_id;	
