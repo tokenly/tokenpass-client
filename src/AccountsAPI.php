@@ -3,8 +3,8 @@
 namespace Tokenly\AccountsClient;
 
 use Exception;
-use Guzzle\Http\Client as GuzzleClient;
-use Guzzle\Http\Exception\RequestException;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 
 class AccountsAPI
