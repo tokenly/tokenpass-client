@@ -3,9 +3,8 @@
 namespace Tokenly\AccountsClient;
 
 use Exception;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\BadResponseException;
-use GuzzleHttp\Psr7\Request;
+use Requests;
+use Tokenly\AccountsClient\Exception\AccountsAPIException;
 
 class AccountsAPI
 {
@@ -139,55 +138,65 @@ class AccountsAPI
 		}
 		return true;
 	}
-	
+
+    // ------------------------------------------------------------------------
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
         $url = $this->api_url.'/api/v1/'.ltrim($path, '/');
+        $options = [];
 
-        $client = new GuzzleClient(['http_errors' => true]);
-
-        $headers = [];
+        // build body
         if ($method == 'GET') {
-            $url .= '?'.http_build_query($parameters);
-            $body = null;
+            $body = $parameters;
         } else {
-            $data = ['body' => $parameters];
             $headers['Content-Type'] = 'application/json';
-            $body = json_encode($parameters);
+            $headers['Accept'] = 'application/json';
+            if ($parameters) {
+                $body = json_encode($parameters);
+            } else {
+                $body = null;
+            }
         }
-        $request = new Request($method, $url, $headers, $body);
+
 
         // send request
         try {
-            $response = $client->send($request);
-        } catch (BadResponseException $e) {
-            if ($response = $e->getResponse()) {
-                // interpret the response and error message
-                $code = $response->getStatusCode();
-
-                try {
-                    $json = json_decode($response->getBody(), true);
-                } catch (Exception $parse_json_exception) {
-                    // could not parse json
-                    $json = null;
-                }
-
-                if ($json and isset($json['error'])) {
-                    $auth_exception = new Exception($json['error'], $code);
-                    throw $auth_exception;
-                }
-            }
-
-            // if no response, then just throw the original exception
+            $response = Requests::request($url, $headers, $body, $method, $options);
+        } catch (Exception $e) {
             throw $e;
         }
 
-        $json = json_decode($response->getBody(), true);
-        if (!is_array($json)) { throw new Exception("Unexpected response", 1); }
+        // decode json
+        try {
+            $json = json_decode($response->body, true);
+        } catch (Exception $parse_json_exception) {
+            // could not parse json
+            $json = null;
+            throw new AccountsAPIException("Unexpected response", 1);
+        }
 
-        if ($json and isset($json['error'])) {
-            $auth_exception = new Exception($json['error'], $response->getStatusCode());
-            throw $auth_exception;
+        // look for errors
+        $is_bad_status_code = ($response->status_code >= 400 AND $response->status_code <= 500);
+        $error_message = null;
+        $error_code = 1;
+        if ($json) {
+            // check for error
+            if (isset($json['error'])) {
+                $error_message = $json['error'];
+            } else if (isset($json['errors'])) {
+                $error_message = isset($json['message']) ? $json['message'] : (is_array($json['errors']) ? implode(", ", $json['errors']) : $json['errors']);
+            }
+        }
+        if ($is_bad_status_code) {
+            if ($error_message === null) {
+                $error_message = "Received bad status code: {$response->status_code}";
+            }
+            $error_code = $response->status_code;
+        }
+
+        // for any errors, throw an exception
+        if ($error_message !== null) {
+            throw new AccountsAPIException($error_message, $error_code);
         }
 
         return $json;
