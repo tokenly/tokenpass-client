@@ -8,8 +8,10 @@ use Tokenly\AccountsClient\Exception\AccountsAPIException;
 
 class AccountsAPI
 {
-	public $client_id = false;
-	public $api_url = false;
+    public $client_id     = false;
+    public $client_secret = false;
+    public $api_url       = false;
+    public $redirect_uri  = false;
 	
 	function __construct()
 	{
