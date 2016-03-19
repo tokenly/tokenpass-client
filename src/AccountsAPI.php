@@ -14,16 +14,16 @@ class AccountsAPI
 	function __construct()
 	{
 		if(function_exists('env')){
-			$this->client_id = env('TOKENLY_ACCOUNTS_CLIENT_ID');
-			$this->api_url = env('TOKENLY_ACCOUNTS_PROVIDER_HOST');
+            $this->client_id     = env('TOKENLY_ACCOUNTS_CLIENT_ID');
+            $this->client_secret = env('TOKENLY_ACCOUNTS_CLIENT_SECRET');
+            $this->api_url       = env('TOKENLY_ACCOUNTS_PROVIDER_HOST');
+            $this->redirect_uri  = env('TOKENLY_ACCOUNTS_REDIRECT_URI');
 		}
 		else{
-			if(defined('TOKENLY_ACCOUNTS_CLIENT_ID')){
-				$this->client_id = TOKENLY_ACCOUNTS_CLIENT_ID;
-			}
-			if(defined('TOKENLY_ACCOUNTS_PROVIDER_HOST')){
-				$this->api_url = TOKENLY_ACCOUNTS_PROVIDER_HOST;
-			}
+            $this->client_id     = (defined('TOKENLY_ACCOUNTS_CLIENT_ID')     ? constant('TOKENLY_ACCOUNTS_CLIENT_ID')     : null);
+            $this->api_url       = (defined('TOKENLY_ACCOUNTS_PROVIDER_HOST') ? constant('TOKENLY_ACCOUNTS_PROVIDER_HOST') : null);
+            $this->redirect_uri  = (defined('TOKENLY_ACCOUNTS_REDIRECT_URI')  ? constant('TOKENLY_ACCOUNTS_REDIRECT_URI')  : null);
+            $this->client_secret = (defined('TOKENLY_ACCOUNTS_CLIENT_SECRET') ? constant('TOKENLY_ACCOUNTS_CLIENT_SECRET') : null);
 		}
 	}
 	
@@ -86,42 +86,6 @@ class AccountsAPI
 		return $call['result'];
 	}
 	
-    public function login($username, $password)
-    {
-        $params['client_id'] = $this->client_id;
-        $params['username'] = $username;
-        $params['password'] = $password;
-        $result = $this->fetchFromAPI('POST', 'login', $params);
-        if (isset($result['error']) AND trim($result['error']) != ''){
-            throw new \Exception($result['error']);
-        }
-
-        if (!isset($result['id'])){
-            throw new \Exception('Unknown error logging in user');
-        }
-
-        return $result;
-    }
-
-
-	public function registerAccount($username, $password, $email, $name = '')
-	{
-		$params['client_id'] = $this->client_id;	
-        $params['username'] = $username;
-        $params['password'] = $password;
-        $params['email'] = $email;
-
-        $result = $this->fetchFromAPI('POST', 'register', $params);
-
-        if(isset($result['error']) AND trim($result['error']) != ''){
-            throw new \Exception($result['error']);
-        }
-        if(!isset($result['result'])){
-            throw new \Exception('Unknown error registering user');
-        }
-        return $result['result'];
-	}
-	
 	public function updateAccount($user_id, $token, $password, $data = array())
 	{
 		$params = $data;
@@ -140,24 +104,145 @@ class AccountsAPI
 	}
 
     // ------------------------------------------------------------------------
+    // oAuth
+
+    public function registerAccount($username, $password, $email, $name = '')
+    {
+        $params = [];
+        $params['client_id'] = $this->client_id;    
+        $params['username'] = $username;
+        $params['password'] = $password;
+        $params['email'] = $email;
+
+        $result = $this->fetchFromAPI('POST', 'register', $params);
+
+        if(isset($result['error']) AND trim($result['error']) != ''){
+            throw new \Exception($result['error']);
+        }
+        if(!isset($result['result'])){
+            throw new \Exception('Unknown error registering user');
+        }
+        return $result['result'];
+    }
+
+    public function verifyLoginCredentials($username, $password) {
+        $params['client_id'] = $this->client_id;
+        $params['username']  = $username;
+        $params['password']  = $password;
+
+        $result = $this->fetchFromAPI('POST', 'login', $params);
+
+        if (isset($result['error']) AND trim($result['error']) != ''){
+            throw new \Exception($result['error']);
+        }
+ 
+        if (!isset($result['id'])) {
+            throw new \Exception('Unknown error logging in user');
+        }
+
+        return $result;
+    }
+
+    public function getOAuthAuthorizationCodeWithCredentials($username, $password, $scopes)
+    {
+        $state = hash('sha256', microtime().':'.mt_rand());
+        $scope = join(',', $scopes);
+
+        $get_parameters = [];
+        $get_parameters['client_id']     = $this->client_id;
+        $get_parameters['state']         = $state;
+        $get_parameters['redirect_uri']  = $this->redirect_uri;
+        $get_parameters['scope']         = $scope;
+        $get_parameters['response_type'] = 'code';
+        $oauth_url = 'oauth/request?'.http_build_query($get_parameters);
+
+
+        $params = [];
+        $params['username']      = $username;
+        $params['password']      = $password;
+        $params['grant_access']   = 1;
+
+        $result = $this->fetchFromAPI('POST', $oauth_url, $params);
+        if (isset($result['error']) AND trim($result['error']) != ''){
+            throw new \Exception($result['error']);
+        }
+
+        if (!isset($result['code'])){
+            throw new \Exception('Unknown error retrieving authorization code');
+        }
+
+        return $result['code'];
+    }
+
+    public function getOAuthAccessToken($code)
+    {
+        $form_data = [
+            'grant_type'    => 'authorization_code',
+            'code'          => $code,
+            'client_id'     => $this->client_id,
+            'client_secret' => $this->client_secret,
+            'redirect_uri'  => $this->redirect_uri,
+        ];
+
+        $result = $this->fetchFromOAuth('POST', 'oauth/access-token', $form_data);
+        if (isset($result['error']) AND trim($result['error']) != ''){
+            throw new \Exception($result['error']);
+        }
+
+        if (!isset($result['access_token'])){
+            throw new \Exception('Unknown error retrieving access token');
+        }
+
+        return $result['access_token'];
+    }
+
+    public function getOAuthUserFromAccessToken($access_token)
+    {
+        $params = ['client_id' => $this->client_id, 'access_token' => $access_token];
+        $result = $this->fetchFromOAuth('GET', 'oauth/user', $form_data);
+        if (isset($result['error']) AND trim($result['error']) != ''){
+            throw new \Exception($result['error']);
+        }
+
+        if (!isset($result['id'])){
+            throw new \Exception('Unknown error retrieving user');
+        }
+
+        return $result['id'];
+    }
+    // ------------------------------------------------------------------------
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
         $url = $this->api_url.'/api/v1/'.ltrim($path, '/');
+        return $this->fetchFromAccounts($method, $url, $parameters);
+    }
+
+    protected function fetchFromOAuth($method, $path, $parameters=[]) {
+        $url = $this->api_url.'/'.ltrim($path, '/');
+        return $this->fetchFromAccounts($method, $url, $parameters, 'form');
+    }
+
+    protected function fetchFromAccounts($method, $url, $parameters=[], $post_type='json') {
+        $headers = [];
         $options = [];
 
         // build body
         if ($method == 'GET') {
             $body = $parameters;
         } else {
-            $headers['Content-Type'] = 'application/json';
-            $headers['Accept'] = 'application/json';
-            if ($parameters) {
-                $body = json_encode($parameters);
+            if ($post_type == 'json') {
+                $headers['Content-Type'] = 'application/json';
+                $headers['Accept'] = 'application/json';
+                if ($parameters) {
+                    $body = json_encode($parameters);
+                } else {
+                    $body = null;
+                }
             } else {
-                $body = null;
+                // form fields (x-www-form-urlencoded)
+                $body = $parameters;
             }
         }
-
 
         // send request
         try {
@@ -201,5 +286,5 @@ class AccountsAPI
 
         return $json;
     }
-	
+
 }
