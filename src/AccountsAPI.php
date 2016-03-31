@@ -414,7 +414,12 @@ class AccountsAPI
                 $headers['Content-Type'] = 'application/json';
                 $headers['Accept'] = 'application/json';
                 if ($parameters) {
-                    $body = json_encode($parameters);
+					if($method == 'DELETE'){
+						$body = $parameters;
+					}
+					else{
+						$body = json_encode($parameters);
+					}
                 } else {
                     $body = null;
                 }
