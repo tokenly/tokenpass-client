@@ -12,7 +12,8 @@ class AccountsAPI
     public $client_secret = false;
     public $api_url       = false;
     public $redirect_uri  = false;
-	
+    public static $errors = array();
+
 	function __construct()
 	{
 		if(function_exists('env')){
@@ -35,7 +36,8 @@ class AccountsAPI
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/check/'.$username, $rules);
 		}
-		catch(Exception $e){
+		catch(AccountsAPIException $e){
+			self::$errors[] = $e->getMessage();
 			return false;
 		}
 		if(!isset($call['result'])){
@@ -49,7 +51,8 @@ class AccountsAPI
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, array('client_id' => $this->client_id, 'public' => 1));
 		}
-		catch(Exception $e){
+		catch(AccountsAPIException $e){
+			self::$errors[] = $e->getMessage();
 			return false;
 		}
 		if(!isset($call['result'])){
@@ -58,12 +61,20 @@ class AccountsAPI
 		return $call['result'];
 	}
 	
-	public function getAddresses($username)
+	public function getAddresses($username, $oauth_token = false, $refresh = false)
 	{
 		try{
-			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, array('client_id' => $this->client_id));
+			$params = array('client_id' => $this->client_id);
+			if($oauth_token){
+				$params['oauth_token'] = $oauth_token;
+				if($refresh){
+					$username .= '/refresh';
+				}
+			}
+			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, $params);
 		}
-		catch(Exception $e){
+		catch(AccountsAPIException $e){
+			self::$errors[] = $e->getMessage();
 			return false;
 		}
 		if(!isset($call['result'])){
@@ -79,7 +90,8 @@ class AccountsAPI
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/check-address/'.$address, $body);
 		}
-		catch(Exeption $e){
+		catch(AccountsAPIException $e){
+			self::$errors[] = $e->getMessage();
 			return false;
 		}
 		if(!isset($call['result'])){
@@ -95,7 +107,12 @@ class AccountsAPI
 		$params['user_id'] = $user_id;
 		$params['token'] = $token;
 		$params['current_password'] = $password;
-		$call = $this->fetchFromAPI('PATCH', 'update', $params);
+		try{
+			$call = $this->fetchFromAPI('PATCH', 'update', $params);
+		}
+		catch(AccountsAPIException $e){
+			throw new \Exception($e->getMessage());
+		}
 		if(!isset($call['result'])){
 			throw new \Exception('Unknown error updating user');
 		}
@@ -116,7 +133,12 @@ class AccountsAPI
         $params['password'] = $password;
         $params['email'] = $email;
 
-        $result = $this->fetchFromAPI('POST', 'register', $params);
+		try{
+			$result = $this->fetchFromAPI('POST', 'register', $params);
+		}
+		catch(AccountsAPIException $e){
+			throw new \Exception($e->getMessage());
+		}
 
         if(isset($result['error']) AND trim($result['error']) != ''){
             throw new \Exception($result['error']);
@@ -131,8 +153,13 @@ class AccountsAPI
         $params['client_id'] = $this->client_id;
         $params['username']  = $username;
         $params['password']  = $password;
-
-        $result = $this->fetchFromAPI('POST', 'login', $params);
+		
+		try{
+			$result = $this->fetchFromAPI('POST', 'login', $params);
+		}
+		catch(AccountsAPIException $e){
+			throw new \Exception($e->getMessage());
+		}
 
         if (isset($result['error']) AND trim($result['error']) != ''){
             throw new \Exception($result['error']);
@@ -163,8 +190,12 @@ class AccountsAPI
         $params['username']      = $username;
         $params['password']      = $password;
         $params['grant_access']   = 1;
-
-        $result = $this->fetchFromAPI('POST', $oauth_url, $params);
+		try{
+			$result = $this->fetchFromAPI('POST', $oauth_url, $params);
+		}
+		catch(AccountsAPIException $e){
+			throw new \Exception($e->getMessage());
+		}
         if (isset($result['error']) AND trim($result['error']) != ''){
             throw new \Exception($result['error']);
         }
@@ -185,8 +216,13 @@ class AccountsAPI
             'client_secret' => $this->client_secret,
             'redirect_uri'  => $this->redirect_uri,
         ];
-
-        $result = $this->fetchFromOAuth('POST', 'oauth/access-token', $form_data);
+		
+		try{
+			$result = $this->fetchFromOAuth('POST', 'oauth/access-token', $form_data);
+		}
+		catch(AccountsAPIException $e){
+			throw new \Exception($e->getMessage());
+		}
         if (isset($result['error']) AND trim($result['error']) != ''){
             throw new \Exception($result['error']);
         }
@@ -201,7 +237,12 @@ class AccountsAPI
     public function getOAuthUserFromAccessToken($access_token)
     {
         $params = ['client_id' => $this->client_id, 'access_token' => $access_token];
-        $result = $this->fetchFromOAuth('GET', 'oauth/user', $form_data);
+        try{
+			$result = $this->fetchFromOAuth('GET', 'oauth/user', $form_data);
+		}
+		catch(AccountsAPIException $e){
+			throw new \Exception($e->getMessage());
+		}
         if (isset($result['error']) AND trim($result['error']) != ''){
             throw new \Exception($result['error']);
         }
@@ -212,6 +253,143 @@ class AccountsAPI
 
         return $result['id'];
     }
+    
+    
+    public function getAddressDetails($username, $address, $oauth_token = false)
+    {
+		try{
+			$params = array('client_id' => $this->client_id);
+			if($oauth_token){
+				$params['oauth_token'] = $oauth_token;
+			}
+			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username.'/'.$address, $params);
+		}
+		catch(AccountsAPIException $e){
+			self::$errors[] = $e->getMessage();
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
+	public function registerAddress($address, $oauth_token, $label = '', $public = false, $active = true)
+	{
+		try{
+			$params = array('client_id' => $this->client_id);
+			$params['oauth_token'] = $oauth_token;
+			$params['address'] = $address;
+			$params['label'] = $label;
+			$params['public'] = $public;
+			$params['active'] = $active;
+			$call = $this->fetchFromAPI('POST', 'tca/addresses', $params);
+		}
+		catch(Exception $e){
+			self::$errors[] = $e->getMessage();
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
+	public function verifyAddress($username, $address, $oauth_token, $signature)
+	{
+		try{
+			$params = array('client_id' => $this->client_id);
+			$params['oauth_token'] = $oauth_token;
+			$params['signature'] = $signature;
+			$call = $this->fetchFromAPI('POST', 'tca/addresses/'.$username.'/'.$address, $params);
+		}
+		catch(Exception $e){
+			self::$errors[] = $e->getMessage();
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
+	public function updateAddressDetails($username, $address, $oauth_token, $label = null, $public = null, $active = null)
+	{
+		try{
+			$params = array('client_id' => $this->client_id);
+			$params['oauth_token'] = $oauth_token;
+			if($label !== null){
+				$params['label'] = $label;
+			}
+			if($public !== null){
+				$params['public'] = $public;
+			}
+			if($active !== null){
+				$params['active'] = $active;
+			}
+			$call = $this->fetchFromAPI('PATCH', 'tca/addresses/'.$username.'/'.$address, $params);
+		}
+		catch(Exception $e){
+			self::$errors[] = $e->getMessage();
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
+	public function deleteAddress($username, $address, $oauth_token)
+	{
+		try{
+			$params = array('client_id' => $this->client_id);
+			$params['oauth_token'] = $oauth_token;
+			$call = $this->fetchFromAPI('DELETE', 'tca/addresses/'.$username.'/'.$address, $params);
+		}
+		catch(Exception $e){
+			self::$errors[] = $e->getMessage();
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];	
+	}
+	
+	public function lookupUserByAddress($address)
+	{
+		try{
+			$params = array('client_id' => $this->client_id);
+			$call = $this->fetchFromAPI('GET', 'lookup/address/'.$address, $params);
+		}
+		catch(AccountsAPIException $e){
+			self::$errors[] = $e->getMessage();
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
+	public function lookupAddressByUser($username)
+	{
+		try{
+			$params = array('client_id' => $this->client_id);
+			$call = $this->fetchFromAPI('GET', 'lookup/user/'.$username, $params);
+		}
+		catch(AccountsAPIException $e){
+			self::$errors[] = $e->getMessage();
+			return false;
+		}
+		if(!isset($call['result'])){
+			return false;
+		}
+		return $call['result'];
+	}
+	
+	
+
     // ------------------------------------------------------------------------
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
