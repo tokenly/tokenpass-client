@@ -43,4 +43,4 @@ Make sure your "users" table contains the following fields: **username, tokenly_
 
 ### Updgrading from v0.3.0
 
-Upgrading from v0.3.0 requires special instructions. (TBD)
+Upgrading from v0.3.0 requires special instructions. (See [docs/migrate.md](docs/migrate.md))
