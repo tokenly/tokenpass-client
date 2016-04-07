@@ -1,13 +1,13 @@
 <?php
 
-namespace Tokenly\AccountsClient\Socialite\Two;
+namespace Tokenly\TokenpassClient\Socialite\Two;
 
 use Exception;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
 use Laravel\Socialite\Two\User;
 
-class TokenlyAccountsProvider extends AbstractProvider implements ProviderInterface
+class TokenpassProvider extends AbstractProvider implements ProviderInterface
 {
     /**
      * The scopes being requested.
@@ -16,7 +16,7 @@ class TokenlyAccountsProvider extends AbstractProvider implements ProviderInterf
      */
     protected $scopes = ['user', 'tca'];
 
-    protected $base_url = 'https://accounts.tokenly.com';
+    protected $base_url = 'https://tokenpass.tokenly.com';
 
     public function setBaseURL($base_url) {
         $this->base_url = $base_url;

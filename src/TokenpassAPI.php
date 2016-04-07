@@ -1,12 +1,12 @@
 <?php
 
-namespace Tokenly\AccountsClient;
+namespace Tokenly\TokenpassClient;
 
 use Exception;
 use Requests;
-use Tokenly\AccountsClient\Exception\AccountsAPIException;
+use Tokenly\TokenpassClient\Exception\TokenpassAPIException;
 
-class AccountsAPI
+class TokenpassAPI
 {
     public $client_id     = false;
     public $client_secret = false;
@@ -17,16 +17,16 @@ class AccountsAPI
 	function __construct()
 	{
 		if(function_exists('env')){
-            $this->client_id     = env('TOKENLY_ACCOUNTS_CLIENT_ID');
-            $this->client_secret = env('TOKENLY_ACCOUNTS_CLIENT_SECRET');
-            $this->api_url       = env('TOKENLY_ACCOUNTS_PROVIDER_HOST');
-            $this->redirect_uri  = env('TOKENLY_ACCOUNTS_REDIRECT_URI');
+            $this->client_id     = env('TOKENPASS_CLIENT_ID');
+            $this->client_secret = env('TOKENPASS_CLIENT_SECRET');
+            $this->api_url       = env('TOKENPASS_PROVIDER_HOST');
+            $this->redirect_uri  = env('TOKENPASS_REDIRECT_URI');
 		}
 		else{
-            $this->client_id     = (defined('TOKENLY_ACCOUNTS_CLIENT_ID')     ? constant('TOKENLY_ACCOUNTS_CLIENT_ID')     : null);
-            $this->api_url       = (defined('TOKENLY_ACCOUNTS_PROVIDER_HOST') ? constant('TOKENLY_ACCOUNTS_PROVIDER_HOST') : null);
-            $this->redirect_uri  = (defined('TOKENLY_ACCOUNTS_REDIRECT_URI')  ? constant('TOKENLY_ACCOUNTS_REDIRECT_URI')  : null);
-            $this->client_secret = (defined('TOKENLY_ACCOUNTS_CLIENT_SECRET') ? constant('TOKENLY_ACCOUNTS_CLIENT_SECRET') : null);
+            $this->client_id     = (defined('TOKENPASS_CLIENT_ID')     ? constant('TOKENPASS_CLIENT_ID')     : null);
+            $this->api_url       = (defined('TOKENPASS_PROVIDER_HOST') ? constant('TOKENPASS_PROVIDER_HOST') : null);
+            $this->redirect_uri  = (defined('TOKENPASS_REDIRECT_URI')  ? constant('TOKENPASS_REDIRECT_URI')  : null);
+            $this->client_secret = (defined('TOKENPASS_CLIENT_SECRET') ? constant('TOKENPASS_CLIENT_SECRET') : null);
 		}
 	}
 	
@@ -36,7 +36,7 @@ class AccountsAPI
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/check/'.$username, $rules);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
 			return false;
 		}
@@ -51,7 +51,7 @@ class AccountsAPI
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, array('client_id' => $this->client_id, 'public' => 1));
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
 			return false;
 		}
@@ -73,7 +73,7 @@ class AccountsAPI
 			}
 			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username, $params);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
 			return false;
 		}
@@ -90,7 +90,7 @@ class AccountsAPI
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/check-address/'.$address, $body);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
 			return false;
 		}
@@ -110,7 +110,7 @@ class AccountsAPI
 		try{
 			$call = $this->fetchFromAPI('PATCH', 'update', $params);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			throw new \Exception($e->getMessage());
 		}
 		if(!isset($call['result'])){
@@ -136,7 +136,7 @@ class AccountsAPI
 		try{
 			$result = $this->fetchFromAPI('POST', 'register', $params);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			throw new \Exception($e->getMessage());
 		}
 
@@ -157,7 +157,7 @@ class AccountsAPI
 		try{
 			$result = $this->fetchFromAPI('POST', 'login', $params);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			throw new \Exception($e->getMessage());
 		}
 
@@ -193,7 +193,7 @@ class AccountsAPI
 		try{
 			$result = $this->fetchFromAPI('POST', $oauth_url, $params);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			throw new \Exception($e->getMessage());
 		}
         if (isset($result['error']) AND trim($result['error']) != ''){
@@ -220,7 +220,7 @@ class AccountsAPI
 		try{
 			$result = $this->fetchFromOAuth('POST', 'oauth/access-token', $form_data);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			throw new \Exception($e->getMessage());
 		}
         if (isset($result['error']) AND trim($result['error']) != ''){
@@ -240,7 +240,7 @@ class AccountsAPI
         try{
 			$result = $this->fetchFromOAuth('GET', 'oauth/user', $form_data);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			throw new \Exception($e->getMessage());
 		}
         if (isset($result['error']) AND trim($result['error']) != ''){
@@ -264,7 +264,7 @@ class AccountsAPI
 			}
 			$call = $this->fetchFromAPI('GET', 'tca/addresses/'.$username.'/'.$address, $params);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
 			return false;
 		}
@@ -362,7 +362,7 @@ class AccountsAPI
 			$params = array('client_id' => $this->client_id);
 			$call = $this->fetchFromAPI('GET', 'lookup/address/'.$address, $params);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
 			return false;
 		}
@@ -378,7 +378,7 @@ class AccountsAPI
 			$params = array('client_id' => $this->client_id);
 			$call = $this->fetchFromAPI('GET', 'lookup/user/'.$username, $params);
 		}
-		catch(AccountsAPIException $e){
+		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
 			return false;
 		}
@@ -394,15 +394,15 @@ class AccountsAPI
 	
     protected function fetchFromAPI($method, $path, $parameters=[]) {
         $url = $this->api_url.'/api/v1/'.ltrim($path, '/');
-        return $this->fetchFromAccounts($method, $url, $parameters);
+        return $this->fetchFromTokenpass($method, $url, $parameters);
     }
 
     protected function fetchFromOAuth($method, $path, $parameters=[]) {
         $url = $this->api_url.'/'.ltrim($path, '/');
-        return $this->fetchFromAccounts($method, $url, $parameters, 'form');
+        return $this->fetchFromTokenpass($method, $url, $parameters, 'form');
     }
 
-    protected function fetchFromAccounts($method, $url, $parameters=[], $post_type='json') {
+    protected function fetchFromTokenpass($method, $url, $parameters=[], $post_type='json') {
         $headers = [];
         $options = [];
 
@@ -442,7 +442,7 @@ class AccountsAPI
         } catch (Exception $parse_json_exception) {
             // could not parse json
             $json = null;
-            throw new AccountsAPIException("Unexpected response", 1);
+            throw new TokenpassAPIException("Unexpected response", 1);
         }
 
         // look for errors
@@ -466,7 +466,7 @@ class AccountsAPI
 
         // for any errors, throw an exception
         if ($error_message !== null) {
-            throw new AccountsAPIException($error_message, $error_code);
+            throw new TokenpassAPIException($error_message, $error_code);
         }
 
         return $json;

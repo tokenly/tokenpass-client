@@ -1,6 +1,6 @@
 <?php
 
-namespace Tokenly\AccountsClient\Facade;
+namespace Tokenly\TokenpassClient\Facade;
 
 use Exception;
 use Illuminate\Support\Facades\Facade;
@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Facade;
 /**
 * 
 */
-class TokenlyAccounts extends Facade
+class Tokenpass extends Facade
 {
     
     protected static function getFacadeAccessor() { 
-        return 'tokenly-accounts';
+        return 'tokenpass';
     }
 
 }

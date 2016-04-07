@@ -1,6 +1,6 @@
 {
     "name": "tokenly/tokenpass-client",
-    "description": "A Laravel package for applications that wish to use Tokenly Accounts for user authentication.",
+    "description": "A Laravel package for applications that wish to use Tokenly Tokenpass for user authentication.",
     "keywords": ["laravel","tokenly","tokenpass","accounts","oauth"],
     "type": "library",
     "license": "MIT",
@@ -19,6 +19,6 @@
         "phpunit/phpunit": "~4"
     },
     "autoload": {
-        "psr-4": {"Tokenly\\AccountsClient\\": "src/"}
+        "psr-4": {"Tokenly\\TokenpassClient\\": "src/"}
     }
 }

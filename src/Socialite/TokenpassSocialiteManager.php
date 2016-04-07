@@ -1,10 +1,10 @@
 <?php
 
-namespace Tokenly\AccountsClient\Socialite;
+namespace Tokenly\TokenpassClient\Socialite;
 
 use Laravel\Socialite\SocialiteManager;
 
-class TokenlyAccountsSocialiteManager extends SocialiteManager
+class TokenpassSocialiteManager extends SocialiteManager
 {
 
     /**
@@ -12,12 +12,12 @@ class TokenlyAccountsSocialiteManager extends SocialiteManager
      *
      * @return \Laravel\Socialite\Two\AbstractProvider
      */
-    protected function createTokenlyAccountsDriver()
+    protected function createTokenpassDriver()
     {
-        $config = $this->app['config']['tokenlyaccounts'];
+        $config = $this->app['config']['tokenpass'];
 
         return $this->buildProvider(
-            'Tokenly\AccountsClient\Socialite\Two\TokenlyAccountsProvider', $config
+            'Tokenly\TokenpassClient\Socialite\Two\TokenpassProvider', $config
         );
     }
 
@@ -30,7 +30,7 @@ class TokenlyAccountsSocialiteManager extends SocialiteManager
      */
     public function getDefaultDriver()
     {
-        return 'tokenlyAccounts';
+        return 'tokenpass';
     }
 
     /**

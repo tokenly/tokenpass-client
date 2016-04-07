@@ -1,6 +1,6 @@
 <?php
 
-namespace Tokenly\AccountsClient;
+namespace Tokenly\TokenpassClient;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Facade;
 /**
 * 
 */
-class TokenlyAccounts
+class Tokenpass
 {
     
     function __construct() {

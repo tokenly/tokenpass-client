@@ -8,7 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
-use Tokenly\AccountsClient\Facade\TokenlyAccounts;
+use Tokenly\TokenpassClient\Facade\Tokenpass;
 
 class AccountController extends Controller
 {
@@ -49,7 +49,7 @@ class AccountController extends Controller
 
 
     /**
-     * Redirect the user to Tokenly Accounts to get authorization
+     * Redirect the user to Tokenpass to get authorization
      */
     public function redirectToProvider()
     {
@@ -59,10 +59,10 @@ class AccountController extends Controller
 
 
     /**
-     * Obtain the user information from Accounts.
+     * Obtain the user information from Tokenpass.
      * 
-     * This is the route called after Tokenly Accounts has granted (or denied) permission to this application
-     * This application is now responsible for loading the user information from Tokenly Accounts and storing
+     * This is the route called after Tokenpass has granted (or denied) permission to this application
+     * This application is now responsible for loading the user information from Tokenpass and storing
      * it in the local user database.
      *
      * @return Response
@@ -71,14 +71,14 @@ class AccountController extends Controller
     {
 
         try {
-            // check for an error returned from Tokenly Accounts
-            $error_description = TokenlyAccounts::checkForError($request);
+            // check for an error returned from Tokenpass
+            $error_description = Tokenpass::checkForError($request);
             if ($error_description) {
                 return view('account.authorization-failed', ['error_msg' => $error_description]);
             }
 
 
-            // retrieve the user from Tokenly Accounts
+            // retrieve the user from Tokenpass
             $oauth_user = Socialite::user();
 
             // get all the properties from the oAuth user object
@@ -103,7 +103,7 @@ class AccountController extends Controller
                 Auth::login($existing_user);
             } else if ($mergable_user) {
                 // an existing user was found with a matching username
-                //  migrate it to the tokenly accounts control
+                //  migrate it to tokenpass
 
                 if ($mergable_user['tokenly_uuid']) {
                     throw new Exception("Can't merge a user already associated with a different tokenly account", 1);
@@ -136,7 +136,7 @@ class AccountController extends Controller
 
 
     /**
-     * Obtain the user information from Tokenly Accounts.
+     * Obtain the user information from Tokenpass.
      *
      * And sync it with our local database
      *
