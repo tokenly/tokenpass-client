@@ -1,7 +1,7 @@
 {
-    "name": "tokenly/accounts-client",
+    "name": "tokenly/tokenpass-client",
     "description": "A Laravel package for applications that wish to use Tokenly Accounts for user authentication.",
-    "keywords": ["laravel","tokenly","accounts","oauth"],
+    "keywords": ["laravel","tokenly","tokenpass","accounts","oauth"],
     "type": "library",
     "license": "MIT",
     "authors": [
