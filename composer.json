@@ -16,7 +16,8 @@
         "rmccue/requests": "^1.6"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4"
+        "phpunit/phpunit": "~4",
+        "mockery/mockery": "dev-master"
     },
     "autoload": {
         "psr-4": {"Tokenly\\TokenpassClient\\": "src/"}
