@@ -363,6 +363,7 @@ class TokenpassAPI
         if(is_array($address)){
             $params['address_list'] = $address;
             $method = 'POST';
+            $address = 'null';
         }
         try{
             $call = $this->fetchFromAPI($method, 'lookup/address/'.$address, $params);
@@ -374,7 +375,7 @@ class TokenpassAPI
 		if(!isset($call['result'])){
 			return false;
 		}
-		return $call['result'];
+		return $call;
 	}
 	
 	public function lookupAddressByUser($username)
