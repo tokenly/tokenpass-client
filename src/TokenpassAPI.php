@@ -29,7 +29,7 @@ class TokenpassAPI
             $this->client_secret = (defined('TOKENPASS_CLIENT_SECRET') ? constant('TOKENPASS_CLIENT_SECRET') : null);
 		}
 	}
-	
+
 	public function checkTokenAccess($username, $rules = array())
 	{
 		$rules['client_id'] = $this->client_id;
@@ -45,7 +45,7 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function getPublicAddresses($username)
 	{
 		try{
@@ -60,7 +60,7 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function getAddresses($username, $oauth_token = false, $refresh = false)
 	{
 		try{
@@ -82,7 +82,7 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function checkAddressTokenAccess($address, $sig, $rules = array())
 	{
 		$body = $rules;
@@ -99,11 +99,11 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function updateAccount($user_id, $token, $password, $data = array())
 	{
 		$params = $data;
-		$params['client_id'] = $this->client_id;	
+		$params['client_id'] = $this->client_id;
 		$params['user_id'] = $user_id;
 		$params['token'] = $token;
 		$params['current_password'] = $password;
@@ -128,7 +128,7 @@ class TokenpassAPI
     public function registerAccount($username, $password, $email, $name = '')
     {
         $params = [];
-        $params['client_id'] = $this->client_id;    
+        $params['client_id'] = $this->client_id;
         $params['username'] = $username;
         $params['password'] = $password;
         $params['email'] = $email;
@@ -153,7 +153,7 @@ class TokenpassAPI
         $params['client_id'] = $this->client_id;
         $params['username']  = $username;
         $params['password']  = $password;
-		
+
 		try{
 			$result = $this->fetchFromAPI('POST', 'login', $params);
 		}
@@ -164,7 +164,7 @@ class TokenpassAPI
         if (isset($result['error']) AND trim($result['error']) != ''){
             throw new \Exception($result['error']);
         }
- 
+
         if (!isset($result['id'])) {
             throw new \Exception('Unknown error logging in user');
         }
@@ -216,7 +216,7 @@ class TokenpassAPI
             'client_secret' => $this->client_secret,
             'redirect_uri'  => $this->redirect_uri,
         ];
-		
+
 		try{
 			$result = $this->fetchFromOAuth('POST', 'oauth/access-token', $form_data);
 		}
@@ -236,9 +236,9 @@ class TokenpassAPI
 
     public function getOAuthUserFromAccessToken($access_token)
     {
-        $params = ['client_id' => $this->client_id, 'access_token' => $access_token];
-        try{
-			$result = $this->fetchFromOAuth('GET', 'oauth/user', $form_data);
+      $params = ['client_id' => $this->client_id, 'access_token' => $access_token];
+    try{
+			$result = $this->fetchFromOAuth('GET', 'oauth/user', $params);
 		}
 		catch(TokenpassAPIException $e){
 			throw new \Exception($e->getMessage());
@@ -253,8 +253,8 @@ class TokenpassAPI
 
         return $result['id'];
     }
-    
-    
+
+
     public function getAddressDetails($username, $address, $oauth_token = false)
     {
 		try{
@@ -273,7 +273,7 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function registerAddress($address, $oauth_token, $label = '', $public = false, $active = true)
 	{
 		try{
@@ -294,7 +294,7 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function verifyAddress($username, $address, $oauth_token, $signature)
 	{
 		try{
@@ -312,7 +312,7 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function updateAddressDetails($username, $address, $oauth_token, $label = null, $public = null, $active = null)
 	{
 		try{
@@ -338,7 +338,7 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function deleteAddress($username, $address, $oauth_token)
 	{
 		try{
@@ -353,9 +353,9 @@ class TokenpassAPI
 		if(!isset($call['result'])){
 			return false;
 		}
-		return $call['result'];	
+		return $call['result'];
 	}
-	
+
 	public function lookupUserByAddress($address)
 	{
 		try{
@@ -371,7 +371,7 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
+
 	public function lookupAddressByUser($username)
 	{
 		try{
@@ -387,11 +387,11 @@ class TokenpassAPI
 		}
 		return $call['result'];
 	}
-	
-	
+
+
 
     // ------------------------------------------------------------------------
-	
+
     protected function fetchFromAPI($method, $path, $parameters=[]) {
         $url = $this->api_url.'/api/v1/'.ltrim($path, '/');
         return $this->fetchFromTokenpass($method, $url, $parameters);
