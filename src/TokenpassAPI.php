@@ -358,14 +358,19 @@ class TokenpassAPI
 	
 	public function lookupUserByAddress($address)
 	{
-		try{
-			$params = array('client_id' => $this->client_id);
-			$call = $this->fetchFromAPI('GET', 'lookup/address/'.$address, $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
+        $params = array('client_id' => $this->client_id);
+        $method = 'GET';
+        if(is_array($address)){
+            $params['address_list'] = $address;
+            $method = 'POST';
+        }
+        try{
+            $call = $this->fetchFromAPI($method, 'lookup/address/'.$address, $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
 		if(!isset($call['result'])){
 			return false;
 		}
