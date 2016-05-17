@@ -18,9 +18,7 @@ class FetchApiTest extends PHPUnit_Framework_TestCase
       ->once()
       ->andReturn(array('result' => 'true'));
 
-    $user = new User($mock);
-
-    $user->checkTokenAccess('username');
+    $mock->checkTokenAccess('username');
   }
 
   public function testGetPublicAddresses()
@@ -192,7 +190,7 @@ class FetchApiTest extends PHPUnit_Framework_TestCase
 
     $mock->lookupAddressByUser('username');
   }
-  
+
   /**
   *      fetchFromOAuth
   */
