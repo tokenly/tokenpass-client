@@ -66,9 +66,8 @@ class FetchApiTest extends PHPUnit_Framework_TestCase
       ->once()
       ->andReturn(array('result' => 'success'));
 
-    $user = new User($mock);
 
-    $user->updateAccount('username', 'token', 'password');
+    $mock->updateAccount('username', 'token', 'password');
   }
 
   public function testRegisterAccount()
