@@ -396,23 +396,23 @@ class TokenpassAPI
     
     public function registerProvisionalSource($address, $proof, $assets = null)
     {
-		try{
-			$params = array('client_id' => $this->client_id);
+        try{
+            $params = array('client_id' => $this->client_id);
             $params['address'] = $address;
             $params['proof'] = $proof;
             $params['assets'] = $assets;
-			$call = $this->fetchFromAPI('POST', 'tca/provisional', $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
+            $call = $this->fetchFromAPI('POST', 'tca/provisional', $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
         return $call['result'];
     }
-    
+
     public function registerProvisionalSourceWithProof($address, $assets = null)
     {
         $proof_message = $this->getProvisionalSourceProofMessage($address);
@@ -429,39 +429,39 @@ class TokenpassAPI
         }
         return $this->registerProvisionalSource($address, $proof, $assets);
     }
-    
+
     public function getProvisionalSourceList()
     {
-		try{
-			$params = array('client_id' => $this->client_id);
-			$call = $this->fetchFromAPI('GET', 'tca/provisional', $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
-		return $call['whitelist'];
+        try{
+            $params = array('client_id' => $this->client_id);
+            $call = $this->fetchFromAPI('GET', 'tca/provisional', $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
+        return $call['whitelist'];
     }
-    
+
     public function getProvisionalSourceProofSuffix()
     {
-		try{
-			$params = array('client_id' => $this->client_id);
-			$call = $this->fetchFromAPI('GET', 'tca/provisional', $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
-		return $call['proof_suffix'];
+        try{
+            $params = array('client_id' => $this->client_id);
+            $call = $this->fetchFromAPI('GET', 'tca/provisional', $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
+        return $call['proof_suffix'];
     }
-    
+
     public function getProvisionalSourceProofMessage($address)
     {
         $suffix = $this->getProvisionalSourceProofSuffix();
@@ -470,27 +470,27 @@ class TokenpassAPI
         }
         return $address.$suffix;
     }
-    
+
     public function deleteProvisionalSource($address)
     {
-		try{
-			$params = array('client_id' => $this->client_id);
-			$call = $this->fetchFromAPI('DELETE', 'tca/provisional/'.$address, $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
+        try{
+            $params = array('client_id' => $this->client_id);
+            $call = $this->fetchFromAPI('DELETE', 'tca/provisional/'.$address, $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
         return $call['result'];
     }
-    
+
     public function promiseTransaction($source, $destination, $asset, $quantity, $expiration, $txid = null, $fingerprint = null, $ref = null)
     {
-		try{
-			$params = array('client_id' => $this->client_id);
+        try{
+            $params = array('client_id' => $this->client_id);
             $params['source'] = $source;
             $params['destination'] = $destination;
             $params['asset'] = $asset;
@@ -503,70 +503,70 @@ class TokenpassAPI
                 $params['fingerprint'] = $fingerprint;
             }
             $params['ref'] = $ref;
-			$call = $this->fetchFromAPI('POST', 'tca/provisional/tx', $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
+            $call = $this->fetchFromAPI('POST', 'tca/provisional/tx', $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
         return $call['tx'];
     }
-    
+
     public function getPromisedTransaction($id)
     {
-		try{
-			$params = array('client_id' => $this->client_id);
-			$call = $this->fetchFromAPI('GET', 'tca/provisional/tx/'.$id, $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
-		return $call['tx'];
+        try{
+            $params = array('client_id' => $this->client_id);
+            $call = $this->fetchFromAPI('GET', 'tca/provisional/tx/'.$id, $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
+        return $call['tx'];
     }
-    
+
     public function getPromisedTransactionList()
     {
-		try{
-			$params = array('client_id' => $this->client_id);
-			$call = $this->fetchFromAPI('GET', 'tca/provisional/tx', $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
-		return $call['list'];
+        try{
+            $params = array('client_id' => $this->client_id);
+            $call = $this->fetchFromAPI('GET', 'tca/provisional/tx', $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
+        return $call['list'];
     }
-    
+
     public function deletePromisedTransaction($id)
     {
-		try{
-			$params = array('client_id' => $this->client_id);
-			$call = $this->fetchFromAPI('DELETE', 'tca/provisional/tx/'.$id, $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
-		return $call['result'];
+        try{
+            $params = array('client_id' => $this->client_id);
+            $call = $this->fetchFromAPI('DELETE', 'tca/provisional/tx/'.$id, $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
+        return $call['result'];
     }
-    
+
     public function updatePromisedTransaction($id, $data)
     {
-		try{
-			$params = array('client_id' => $this->client_id);
+        try{
+            $params = array('client_id' => $this->client_id);
             if(isset($data['quantity'])){
                 $params['quantity'] = $data['quantity'];
             }
@@ -582,18 +582,18 @@ class TokenpassAPI
             if(isset($data['ref'])){
                 $params['ref'] = $data['ref'];
             }
-			$call = $this->fetchFromAPI('PATCH', 'tca/provisional/tx/'.$id, $params);
-		}
-		catch(TokenpassAPIException $e){
-			self::$errors[] = $e->getMessage();
-			return false;
-		}
-		if(!isset($call['result'])){
-			return false;
-		}
-		return $call['tx'];
+            $call = $this->fetchFromAPI('PATCH', 'tca/provisional/tx/'.$id, $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
+        return $call['tx'];
     }
-	
+
 	
 
     // ------------------------------------------------------------------------
