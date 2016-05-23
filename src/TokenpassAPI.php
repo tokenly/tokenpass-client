@@ -410,6 +410,11 @@ class TokenpassAPI
         if(!isset($call['result'])){
             throw new Exception('Unkown error registering provisional source');
         }
+        if(!$call['result']){
+            if(isset($call['error'])){
+                throw new Exception($call['error']);
+            }
+        }
         return $call['result'];
     }
 
