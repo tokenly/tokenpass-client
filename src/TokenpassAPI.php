@@ -405,10 +405,10 @@ class TokenpassAPI
         }
         catch(TokenpassAPIException $e){
             self::$errors[] = $e->getMessage();
-            return false;
+            throw new Exception($e->getMessage());
         }
         if(!isset($call['result'])){
-            return false;
+            throw new Exception('Unkown error registering provisional source');
         }
         return $call['result'];
     }
@@ -418,14 +418,9 @@ class TokenpassAPI
         $proof_message = $this->getProvisionalSourceProofMessage($address);
         $xchain = app('Tokenly\XChainClient\Client');
         $proof = false;
-        try{
-            $proof = $xchain->signMessage($address, $proof_message);
-        }
-        catch(Exception $e){
-            return false;
-        }
+        $proof = $xchain->signMessage($address, $proof_message);
         if(!$proof){
-            return false;
+            throw new Exception('Failed signing message');
         }
         return $this->registerProvisionalSource($address, $proof, $assets);
     }
