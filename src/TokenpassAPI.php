@@ -424,9 +424,10 @@ class TokenpassAPI
         $xchain = app('Tokenly\XChainClient\Client');
         $proof = false;
         $proof = $xchain->signMessage($address, $proof_message);
-        if(!$proof){
+        if(!$proof OR !isset($proof['result'])){
             throw new Exception('Failed signing message');
         }
+        $proof = $proof['result'];
         return $this->registerProvisionalSource($address, $proof, $assets);
     }
 
