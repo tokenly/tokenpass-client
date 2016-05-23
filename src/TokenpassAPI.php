@@ -401,7 +401,7 @@ class TokenpassAPI
             $params['address'] = $address;
             $params['proof'] = $proof;
             $params['assets'] = $assets;
-            $call = $this->fetchFromAPI('POST', 'tca/provisional', $params);
+            $call = $this->fetchFromAPI('POST', 'tca/provisional/register', $params);
         }
         catch(TokenpassAPIException $e){
             self::$errors[] = $e->getMessage();
