@@ -23,6 +23,10 @@ class TokenpassServiceProvider extends ServiceProvider
             return new Tokenpass();
         });
 
+        $this->app->bind('Tokenly\TokenpassClient\TokenpassAPI', function($app) {
+            return new TokenpassAPI();
+        });
+
         $this->app->bind('Laravel\Socialite\Contracts\Factory', function ($app) {
             return new TokenpassSocialiteManager($app);
         });
