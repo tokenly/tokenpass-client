@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\ServiceProvider;
 use Tokenly\TokenpassClient\Socialite\TokenpassSocialiteManager;
 use Tokenly\TokenpassClient\Tokenpass;
+use Tokenly\TokenpassClient\TokenpassAPI;
 
 /**
 * 
