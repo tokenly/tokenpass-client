@@ -83,10 +83,9 @@ class TokenpassAPI
 		return $call['result'];
 	}
 	
-	public function checkAddressTokenAccess($address, $sig, $rules = array())
+	public function checkAddressTokenAccess($address, $rules = array())
 	{
 		$body = $rules;
-		$body['sig'] = $sig;
 		try{
 			$call = $this->fetchFromAPI('GET', 'tca/check-address/'.$address, $body);
 		}
