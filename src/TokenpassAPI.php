@@ -673,11 +673,7 @@ class TokenpassAPI extends TokenlyAPI
             return false;
         }
 
-        if (!isset($response['result'])) {
-            return false;
-        }
-
-        return $response['result'];
+        return $response;
     }
 
     public function getCombinedProtectedBalances($oauth_token, $refresh = false)
@@ -691,11 +687,7 @@ class TokenpassAPI extends TokenlyAPI
             return false;
         }
 
-        if (!isset($response['result'])) {
-            return false;
-        }
-
-        return $response['result'];
+        return $response;
     }
 
 	

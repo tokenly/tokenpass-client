@@ -24,7 +24,7 @@ if ($step == 1) {
     $get_vars = [
         'client_id'     => env('TOKENPASS_CLIENT_ID'),
         'redirect_uri'  => 'http://localhost:8000/oauth_callback',
-        'scope'         => 'tca,private-address,manage-address',
+        'scope'         => 'tca,private-address,manage-address,private-balances',
         'response_type' => 'code',
         'state'         => 'foo_'.date("Ymd_His"),
     ];
