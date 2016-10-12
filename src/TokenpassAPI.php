@@ -85,8 +85,8 @@ class TokenpassAPI extends TokenlyAPI
             $params = [];
 			if($oauth_token){
 				$params['oauth_token'] = $oauth_token;
-				if ($refresh) { $params['refresh'] = '1'; }
-			}
+            }
+			if ($refresh) { $params['refresh'] = '1'; }
 			$call = $this->fetchFromTokenpassAPI('GET', 'tca/addresses/'.$username, $params);
 		}
 		catch(TokenpassAPIException $e){
@@ -660,6 +660,42 @@ class TokenpassAPI extends TokenlyAPI
             return false;
         }
         return $call['tx'];
+    }
+
+    public function getCombinedPublicBalances($oauth_token, $refresh = false)
+    {
+        try {
+            $params = ['oauth_token' => $oauth_token];
+            if ($refresh) { $params['refresh'] = '1'; }
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/public/balances', $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+
+        if (!isset($response['result'])) {
+            return false;
+        }
+
+        return $response['result'];
+    }
+
+    public function getCombinedProtectedBalances($oauth_token, $refresh = false)
+    {
+        try {
+            $params = ['oauth_token' => $oauth_token];
+            if ($refresh) { $params['refresh'] = '1'; }
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/protected/balances', $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+
+        if (!isset($response['result'])) {
+            return false;
+        }
+
+        return $response['result'];
     }
 
 	
