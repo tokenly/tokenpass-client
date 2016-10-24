@@ -89,7 +89,7 @@ class TokenpassAPI extends TokenlyAPI
 				$params['oauth_token'] = $oauth_token;
             }
 			if ($refresh) { $params['refresh'] = '1'; }
-			$call = $this->fetchFromTokenpassAPI('GET', 'tca/addresses/'.$username, $params);
+			$call = $this->fetchFromTokenpassAPI('GET', 'tca/addresses', $params);
 		}
 		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
