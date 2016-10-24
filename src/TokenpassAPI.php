@@ -47,10 +47,12 @@ class TokenpassAPI extends TokenlyAPI
 	
     // ------------------------------------------------------------------------
     
-	public function checkTokenAccess($username, $rules = array())
+	public function checkTokenAccess($username, $rules = array(), $oauth_token)
 	{
 		try{
-			$call = $this->fetchFromTokenpassAPI('GET', 'tca/check/'.$username, $this->normalizeGetParameters($rules));
+            $params = $this->normalizeGetParameters($rules);
+            $params['oauth_token'] = $oauth_token;
+			$call = $this->fetchFromTokenpassAPI('GET', 'tca/check/'.$username, $params);
 		}
 		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
