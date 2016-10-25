@@ -47,7 +47,7 @@ class TokenpassAPI extends TokenlyAPI
 	
     // ------------------------------------------------------------------------
     
-	public function checkTokenAccess($username, $rules = array(), $oauth_token)
+	public function checkTokenAccess($username, $rules, $oauth_token)
 	{
 		try{
             $params = $this->normalizeGetParameters($rules);
