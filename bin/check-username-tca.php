@@ -11,7 +11,7 @@ export TOKENPASS_PROVIDER_HOST=https://tokenpass-stage.tokenly.com
 export TOKENPASS_CLIENT_ID=xxxxx
 export TOKENPASS_CLIENT_SECRET=xxxxx
 
-./check-username-tca.php <username> <rules>
+./check-username-tca.php <oauth_token> <username> <rules>
 
 */ 
 
@@ -20,12 +20,13 @@ require __DIR__.'/init/bootstrap.php';
 $api = new TokenpassAPI();
 
 // get vars
-$username = $argv[1];
-$rules = json_decode($argv[2], true);
+$oauth_token = $argv[1];
+$username = $argv[2];
+$rules = json_decode($argv[3], true);
 
 // check
 echo "Checking user $username with rules: ".json_encode($rules)."\n";
-$result = $api->checkTokenAccess($username, $rules);
+$result = $api->checkTokenAccess($username, $rules, $oauth_token);
 
 // handle error
 if ($result === false) {
