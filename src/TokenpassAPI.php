@@ -704,6 +704,21 @@ class TokenpassAPI extends TokenlyAPI
 
         return true;
     }
+    
+    public function checkUserExists($username)
+    {
+        try {
+            $params = [];
+            $response = $this->fetchFromTokenpassAPI('POST', 'api/v1/lookup/user/exists/'.$username, $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!$response OR !$response['result']){
+            return false;
+        }
+        return true;
+    }
 
 	
     // ------------------------------------------------------------------------
