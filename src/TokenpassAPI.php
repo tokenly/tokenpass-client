@@ -464,13 +464,19 @@ class TokenpassAPI extends TokenlyAPI
 		return $call;
 	}
     
-    public function registerProvisionalSource($address, $proof, $assets = null)
+    public function registerProvisionalSource($address, $proof, $assets = null, $extra_opts = array())
     {
         try{
             $params = [];
             $params['address'] = $address;
             $params['proof'] = $proof;
             $params['assets'] = $assets;
+            $valid_extra = array('assign_user', 'assign_user_hash', 'assign_user_label');
+            foreach($valid_extra as $f){
+                if(isset($extra_opts[$f])){
+                    $params[$f] = $extra_opts[$f];
+                }
+            }
             $call = $this->fetchFromTokenpassAPI('POST', 'tca/provisional/register', $params);
         }
         catch(TokenpassAPIException $e){
@@ -488,7 +494,7 @@ class TokenpassAPI extends TokenlyAPI
         return $call['result'];
     }
 
-    public function registerProvisionalSourceWithProof($address, $assets = null)
+    public function registerProvisionalSourceWithProof($address, $assets = null, $extra_opts = array())
     {
         $proof_message = $this->getProvisionalSourceProofMessage($address);
         $xchain = app('Tokenly\XChainClient\Client');
@@ -498,7 +504,7 @@ class TokenpassAPI extends TokenlyAPI
             throw new Exception('Failed signing message');
         }
         $proof = $proof['result'];
-        return $this->registerProvisionalSource($address, $proof, $assets);
+        return $this->registerProvisionalSource($address, $proof, $assets, $extra_opts);
     }
 
     public function getProvisionalSourceList()
