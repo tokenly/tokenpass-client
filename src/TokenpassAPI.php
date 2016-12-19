@@ -709,7 +709,7 @@ class TokenpassAPI extends TokenlyAPI
     {
         try {
             $params = [];
-            $response = $this->fetchFromTokenpassAPI('POST', 'api/v1/lookup/user/exists/'.$username, $params);
+            $response = $this->fetchFromTokenpassAPI('GET', 'api/v1/lookup/user/exists/'.$username, $params);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
