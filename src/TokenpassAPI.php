@@ -728,6 +728,238 @@ class TokenpassAPI extends TokenlyAPI
         }
         return true;
     }
+    
+    /** App Credits API methods **/
+    /******************************/
+    
+    public function newAppCreditGroup($name, $app_whitelist = array())
+    {
+        try {
+            $params = array();
+            $params['name'] = $name;
+            if(is_string($app_whitelist)){
+                $params['app_whitelist'] = $app_whitelist;
+            }
+            elseif(is_array($app_whitelist)){
+                $params['app_whitelist'] = join("\n", $app_whitelist);
+            }
+            $response = $this->fetchFromTokenpassAPI('POST', 'credits', $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!$response){
+            return false;
+        }
+        return $response['credit_group'];
+    }
+    
+    public function updateAppCreditGroup($id, $data)
+    {
+        try {
+            $params = array();
+            if(isset($data['name'])){
+                $params['name'] = $name;
+            }
+            if(isset($data['app_whitelist'])){
+                if(is_string($data['app_whitelist'])){
+                    $params['app_whitelist'] = $data['app_whitelist'];
+                }
+                elseif(is_array($data['app_whitelist'])){
+                    $params['app_whitelist'] = join("\n", $data['app_whitelist']);
+                }
+            }
+            $response = $this->fetchFromTokenpassAPI('PATCH', 'credits/'.$id, $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!$response){
+            return false;
+        }
+        return $response['credit_group'];
+    }
+    
+    public function listAppCreditGroups()
+    {
+        try{
+            $call = $this->fetchFromTokenpassAPI('GET', 'credits');
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['list'])){
+            return false;
+        }
+        return $call['list'];
+    }
+    
+    public function getAppCreditGroup($groupId)
+    {
+        try{
+            $call = $this->fetchFromTokenpassAPI('GET', 'credits/'.$groupId);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['credit_group'])){
+            return false;
+        }
+        return $call['credit_group'];
+    }
+    
+    public function newAppCreditAccount($groupId, $name)
+    {
+        try {
+            $params = array();
+            $params['name'] = $name;
+            $response = $this->fetchFromTokenpassAPI('POST', 'credits/'.$groupId.'/accounts', $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!$response){
+            return false;
+        }
+        return $response['account'];
+    }
+    
+    public function listAppCreditAccounts($groupId)
+    {
+        try{
+            $call = $this->fetchFromTokenpassAPI('GET', 'credits/'.$groupId.'/accounts');
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['accounts'])){
+            return false;
+        }
+        return $call['accounts'];
+    }
+    
+    public function getAppCreditAccount($groupId, $accountId)
+    {
+        try{
+            $call = $this->fetchFromTokenpassAPI('GET', 'credits/'.$groupId.'/accounts/'.$accountId);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['account'])){
+            return false;
+        }
+        return $call['account']; 
+    }
+    
+    public function getAppCreditAccountBalance($groupId, $accountId)
+    {
+        $get = $this->getAppCreditAccount($groupId, $acountId);
+        if(!$get){
+            return false;
+        }
+        return $get['balance'];
+    }
+    
+    public function giveAppCredit($groupId, $account, $amount, $ref = null, $source = null)
+    {
+        $accounts_amounts = array();
+        $item = array('account' => $account, 'amount' => $amount, 'ref' => $ref);
+        if($source !== null){
+            $item['source'] = $source;
+        }
+        $accounts_amounts[] = $item;
+        return $this->giveMultipleAppCredit($groupId, $accounts_amounts);
+    }
+    
+    public function takeAppCredit($groupId, $account, $amount, $ref = null, $destination = null)
+    {
+        $accounts_amounts = array();
+        $item = array('account' => $account, 'amount' => $amount, 'ref' => $ref);
+        if($destination !== null){
+            $item['destination'] = $destination;
+        }
+        $accounts_amounts[] = $item;
+        return $this->takeMultipleAppCredit($groupId, $accounts_amounts);
+    }
+    
+    public function giveMultipleAppCredit($groupId, $accounts_amounts)
+    {
+        //$accounts_amounts = array(array('account' => <account_uuid>, 'amount' => 5000, 'source' => <source_account_uuid>|null))
+        try{
+            $params = array();
+            $params['accounts'] = $accounts_amounts;
+            $call = $this->fetchFromTokenpassAPI('POST', 'credits/'.$groupId.'/accounts/credit', $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['transactions'])){
+            return false;
+        }
+        return $call['transactions']; 
+    }
+    
+    public function takeMultipleAppCredit($groupId, $accounts_amounts)
+    {
+        //$accounts_amounts = array(array('account' => <account_uuid>, 'amount' => 5000, 'destination' => <destination_account_uuid>|null))
+        try{
+            $params = array();
+            $params['accounts'] = $accounts_amounts;
+            $call = $this->fetchFromTokenpassAPI('POST', 'credits/'.$groupId.'/accounts/debit', $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['transactions'])){
+            return false;
+        }
+        return $call['transactions']; 
+    }
+    
+    public function creditMultipleAppCredit($groupId, $accounts_amounts)
+    {
+        //alias
+        return $this->giveMultipleAppCredit($groupId, $accounts_amounts);
+    }
+    
+    public function debitMultipleAppCredit($groupId, $accounts_amounts)
+    {
+        //alias
+        return $this->takeMultipleAppCredit($groupId, $accounts_amounts);
+    }    
+    
+    public function getAppCreditGroupHistory($groupId)
+    {
+        try{
+            $call = $this->fetchFromTokenpassAPI('GET', 'credits/'.$groupId.'/history');
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        return $call; 
+    }
+    
+    public function getAppCreditAccountHistory($groupId, $account)
+    {
+        try{
+            $call = $this->fetchFromTokenpassAPI('GET', 'credits/'.$groupId.'/accounts/'.$accountId.'/history');
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        return $call; 
+    }
+    
+    /** END App Credit API Methods **/
 
 	
     // ------------------------------------------------------------------------
