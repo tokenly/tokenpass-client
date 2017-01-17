@@ -858,7 +858,7 @@ class TokenpassAPI extends TokenlyAPI
     
     public function getAppCreditAccountBalance($groupId, $accountId)
     {
-        $get = $this->getAppCreditAccount($groupId, $acountId);
+        $get = $this->getAppCreditAccount($groupId, $accountId);
         if(!$get){
             return false;
         }
