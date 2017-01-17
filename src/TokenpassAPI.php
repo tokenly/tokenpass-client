@@ -950,7 +950,7 @@ class TokenpassAPI extends TokenlyAPI
     public function getAppCreditAccountHistory($groupId, $account)
     {
         try{
-            $call = $this->fetchFromTokenpassAPI('GET', 'credits/'.$groupId.'/accounts/'.$accountId.'/history');
+            $call = $this->fetchFromTokenpassAPI('GET', 'credits/'.$groupId.'/accounts/'.$account.'/history');
         }
         catch(TokenpassAPIException $e){
             self::$errors[] = $e->getMessage();
