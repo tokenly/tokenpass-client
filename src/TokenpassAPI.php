@@ -711,6 +711,19 @@ class TokenpassAPI extends TokenlyAPI
         return true;
     }
     
+    public function getChatPrivileges($oauth_token, $chat_id)
+    {
+        try {
+            $params = ['oauth_token' => $oauth_token];
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/messenger/chat/'.$chat_id, $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+
+        return $response;
+    }
+
     public function checkUserExists($username, $id_hash = null)
     {
         try {
