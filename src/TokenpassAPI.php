@@ -974,6 +974,17 @@ class TokenpassAPI extends TokenlyAPI
     
     /** END App Credit API Methods **/
 
+
+    public function getTokenPerks($token) {
+        try {
+            $result = $this->fetchFromPublicTokenpassAPI('GET', 'perks/'.$token);
+        }
+        catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        return $result;
+    }
 	
     // ------------------------------------------------------------------------
     
@@ -986,10 +997,14 @@ class TokenpassAPI extends TokenlyAPI
     }
 
     // ------------------------------------------------------------------------
-	
-    protected function fetchFromTokenpassAPI($method, $path, $parameters=[]) {
+
+    protected function fetchFromPublicTokenpassAPI($method, $path, $parameters=[]) {
+        return $this->fetchFromTokenpassAPI($method, $path, $parameters, ['public' => true]);
+    }
+
+    protected function fetchFromTokenpassAPI($method, $path, $parameters=[], $options=[]) {
         $url = '/api/v1/'.ltrim($path, '/');
-        return $this->fetchFromTokenpass($method, $url, $parameters);
+        return $this->fetchFromTokenpass($method, $url, $parameters, 'json', $options);
     }
 
     protected function fetchFromOAuth($method, $path, $parameters=[]) {
@@ -997,10 +1012,8 @@ class TokenpassAPI extends TokenlyAPI
         return $this->fetchFromTokenpass($method, $url, $parameters, 'form');
     }
 
-    protected function fetchFromTokenpass($method, $url, $parameters=[], $post_type='json') {
-        $options = [
-            'post_type' => $post_type,
-        ];
+    protected function fetchFromTokenpass($method, $url, $parameters=[], $post_type='json', $options=[]) {
+        $options['post_type'] = $post_type;
         try {
             return $this->call($method, $url, $parameters, $options);
         } catch (Exception $e) {
