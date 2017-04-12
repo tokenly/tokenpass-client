@@ -698,6 +698,19 @@ class TokenpassAPI extends TokenlyAPI
         return $response;
     }
 
+    public function getChats($oauth_token)
+    {
+        try {
+            $params = ['oauth_token' => $oauth_token];
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/messenger/chats', $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+
+        return $response;
+    }
+    
     public function joinChat($oauth_token, $chat_id)
     {
         try {
