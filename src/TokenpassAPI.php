@@ -723,7 +723,62 @@ class TokenpassAPI extends TokenlyAPI
 
         return true;
     }
-    
+
+    // ------------------------------------------------------------------------
+    // managed chats
+
+    public function getChat($oauth_token, $chat_uuid)
+    {
+        try {
+            $params = ['oauth_token' => $oauth_token];
+            $response = $this->fetchFromTokenpassAPI('GET', '/chat/'.$chat_uuid, $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+
+        return $response;
+    }
+
+    /**
+     * create a new chat
+     * @param  string $oauth_token [description]
+     * @param  array $create_vars  name, active, global, tca_rules ([['token' => 'MYTOKEN', 'quantity' => 100000000]])
+     * @return array               new chat data
+     */
+    public function createChat($oauth_token, $create_vars)
+    {
+        try {
+            $params = ['oauth_token' => $oauth_token];
+            $response = $this->fetchFromTokenpassAPI('POST', '/chats', $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+
+        return $response;
+    }
+
+    /**
+     * updates an existing chat
+     * @param  string $oauth_token [description]
+     * @param  string $chat_uuid   
+     * @param  array $update_vars  active, global, tca_rules ([['token' => 'MYTOKEN', 'quantity' => 100000000]])
+     * @return array               updated chat data
+     */
+    public function editChat($oauth_token, $chat_uuid, $update_vars)
+    {
+        try {
+            $params = array_merge($update_vars, ['oauth_token' => $oauth_token]);
+            $response = $this->fetchFromTokenpassAPI('POST', '/chat/'.$chat_uuid, $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+
+        return $response;
+    }
+
     public function getChatPrivileges($oauth_token, $chat_id)
     {
         try {
