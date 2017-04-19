@@ -799,14 +799,16 @@ class TokenpassAPI extends TokenlyAPI
         return $response;
     }
 
-    public function checkUserExists($username, $id_hash = null)
+    public function checkUserExists($username, $assign_user_hash = null)
     {
         try {
             $params = [];
-            if($id_hash !== null){
-                $params['id_hash'] = $id_hash;
+            if($assign_user_hash !== null){
+                $params['assign_user_hash'] = $assign_user_hash;
             }
             $response = $this->fetchFromTokenpassAPIWithPrivilegedAuth('GET', 'lookup/user/exists/'.$username, $params);
+        } catch (Exception $e) {
+            throw $e;
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -1096,7 +1098,7 @@ class TokenpassAPI extends TokenlyAPI
         }
     }
 
-    protected function fetchFromTokenpassAPIWithPrivilegedAuth($method, $url, $parameters=[]) {
+    protected function fetchFromTokenpassAPIWithPrivilegedAuth($method, $path, $parameters=[]) {
         $exception = null;
         try {
             // save the client id and secret
@@ -1107,8 +1109,7 @@ class TokenpassAPI extends TokenlyAPI
             $this->client_id     = $this->privileged_client_id;
             $this->client_secret = $this->privileged_client_secret;
 
-            $url = '/api/v1/'.ltrim($path, '/');
-            $result = $this->fetchFromTokenpass($method, $url, $parameters);
+            $result = $this->fetchFromTokenpassAPI($method, $path, $parameters);
         } catch (Exception $e) {
             $exception = $e;
         }
