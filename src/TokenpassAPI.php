@@ -21,8 +21,8 @@ class TokenpassAPI extends TokenlyAPI
             $client_id                      = env('TOKENPASS_CLIENT_ID');
             $client_secret                  = env('TOKENPASS_CLIENT_SECRET');
 
-            $this->privileged_client_id     = env('PRIVILEGED_CLIENT_ID');
-            $this->privileged_client_secret = env('PRIVILEGED_CLIENT_SECRET');
+            $this->privileged_client_id     = env('TOKENPASS_PRIVILEGED_CLIENT_ID');
+            $this->privileged_client_secret = env('TOKENPASS_PRIVILEGED_CLIENT_SECRET');
 
             $api_url                        = env('TOKENPASS_PROVIDER_HOST');
 
