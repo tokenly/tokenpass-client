@@ -13,13 +13,20 @@ class TokenpassAPI extends TokenlyAPI
     public $redirect_uri  = false;
     public static $errors = array();
 
+    protected $privileged_client_id = null;
+    protected $privileged_client_secret = null;
+
 	function __construct() {
 		if(function_exists('env')){
-            $client_id           = env('TOKENPASS_CLIENT_ID');
-            $client_secret       = env('TOKENPASS_CLIENT_SECRET');
-            $api_url             = env('TOKENPASS_PROVIDER_HOST');
+            $client_id                      = env('TOKENPASS_CLIENT_ID');
+            $client_secret                  = env('TOKENPASS_CLIENT_SECRET');
 
-            $this->redirect_uri  = env('TOKENPASS_REDIRECT_URI');
+            $this->privileged_client_id     = env('PRIVILEGED_CLIENT_ID');
+            $this->privileged_client_secret = env('PRIVILEGED_CLIENT_SECRET');
+
+            $api_url                        = env('TOKENPASS_PROVIDER_HOST');
+
+            $this->redirect_uri             = env('TOKENPASS_REDIRECT_URI');
 		}
 		else{
             $client_id           = (defined('TOKENPASS_CLIENT_ID')     ? constant('TOKENPASS_CLIENT_ID')     : null);
@@ -718,7 +725,7 @@ class TokenpassAPI extends TokenlyAPI
             if($id_hash !== null){
                 $params['id_hash'] = $id_hash;
             }
-            $response = $this->fetchFromTokenpassAPI('GET', 'lookup/user/exists/'.$username, $params);
+            $response = $this->fetchFromTokenpassAPIWithPrivilegedAuth('GET', 'lookup/user/exists/'.$username, $params);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -761,6 +768,31 @@ class TokenpassAPI extends TokenlyAPI
         } catch (Exception $e) {
             throw new TokenpassAPIException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    protected function fetchFromTokenpassAPIWithPrivilegedAuth($method, $url, $parameters=[]) {
+        $exception = null;
+        try {
+            // save the client id and secret
+            $old_client_id       = $this->client_id;
+            $old_client_secret   = $this->client_secret;
+
+            // use the privileged client id and secret
+            $this->client_id     = $this->privileged_client_id;
+            $this->client_secret = $this->privileged_client_secret;
+
+            $url = '/api/v1/'.ltrim($path, '/');
+            $result = $this->fetchFromTokenpass($method, $url, $parameters);
+        } catch (Exception $e) {
+            $exception = $e;
+        }
+
+        // restore the client id and secret
+        $this->client_id     = $old_client_id;
+        $this->client_secret = $old_client_secret;
+
+        if ($exception !== null) { throw $exception; }
+        return $result;
     }
 
 }
