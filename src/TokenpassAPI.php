@@ -799,12 +799,15 @@ class TokenpassAPI extends TokenlyAPI
         return $response;
     }
 
-    public function checkUserExists($username, $assign_user_hash = null)
+    public function checkUserExists($username, $assign_user_hash=null, $strict=false)
     {
         try {
             $params = [];
-            if($assign_user_hash !== null){
+            if ($assign_user_hash !== null) {
                 $params['assign_user_hash'] = $assign_user_hash;
+            }
+            if ($strict) {
+                $params['strict'] = '1';
             }
             $response = $this->fetchFromTokenpassAPIWithPrivilegedAuth('GET', 'lookup/user/exists/'.$username, $params);
         } catch (Exception $e) {
