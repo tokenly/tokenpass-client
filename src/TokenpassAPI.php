@@ -1069,8 +1069,8 @@ class TokenpassAPI extends TokenlyAPI
     public function lookupUserByEmail($email)
     {
         try{
-            $params = [];
-            $call = $this->fetchFromTokenpassAPIWithPrivilegedAuth('GET', 'api/v1/lookup/email/'.$email, $params);
+            $params = ['client_id' => $this->client_id];
+            $call = $this->fetchFromTokenpassAPI('GET', 'lookup/email/'.$email, $params);
         }
         catch(TokenpassAPIException $e){
             self::$errors[] = $e->getMessage();
