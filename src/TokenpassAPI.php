@@ -1079,7 +1079,7 @@ class TokenpassAPI extends TokenlyAPI
         if(!isset($call['result'])){
             return false;
         }
-        return $call;
+        return $call['result'];
     }
 	
     // ------------------------------------------------------------------------
