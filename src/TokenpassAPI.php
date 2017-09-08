@@ -665,6 +665,12 @@ class TokenpassAPI extends TokenlyAPI
             if(isset($data['ref'])){
                 $params['ref'] = $data['ref'];
             }
+            if(isset($data['note'])){
+                $params['note'] = $data['note'];
+            }            
+            if(isset($data['destination'])){
+                $params['destination'] = $data['destination'];
+            }
             $call = $this->fetchFromTokenpassAPI('PATCH', 'tca/provisional/tx/'.$id, $params);
         }
         catch(TokenpassAPIException $e){
