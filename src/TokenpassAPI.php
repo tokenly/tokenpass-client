@@ -58,8 +58,7 @@ class TokenpassAPI extends TokenlyAPI
 	{
 		try{
             $params = $this->normalizeGetParameters($rules);
-            $params['oauth_token'] = $oauth_token;
-			$call = $this->fetchFromTokenpassAPI('GET', 'tca/check/'.$username, $params);
+			$call = $this->fetchFromTokenpassAPI('GET', 'tca/check/'.$username, $params, $oauth_token);
 		}
 		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
@@ -92,11 +91,8 @@ class TokenpassAPI extends TokenlyAPI
 	{
 		try{
             $params = [];
-			if($oauth_token){
-				$params['oauth_token'] = $oauth_token;
-            }
 			if ($refresh) { $params['refresh'] = '1'; }
-			$call = $this->fetchFromTokenpassAPI('GET', 'tca/addresses', $params);
+			$call = $this->fetchFromTokenpassAPI('GET', 'tca/addresses', $params, $oauth_token);
 		}
 		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
@@ -311,8 +307,7 @@ class TokenpassAPI extends TokenlyAPI
     {
 		try{
             $params = [];
-			$params['oauth_token'] = $oauth_token;
-			$call = $this->fetchFromTokenpassAPI('GET', 'tca/address/'.$address, $params);
+			$call = $this->fetchFromTokenpassAPI('GET', 'tca/address/'.$address, $params, $oauth_token);
 		}
 		catch(TokenpassAPIException $e){
 			self::$errors[] = $e->getMessage();
@@ -336,12 +331,11 @@ class TokenpassAPI extends TokenlyAPI
 	{
 		try{
             $params = [];
-			$params['oauth_token'] = $oauth_token;
 			$params['address'] = $address;
 			$params['label'] = $label;
 			$params['public'] = $public;
 			$params['active'] = $active;
-			$call = $this->fetchFromTokenpassAPI('POST', 'tca/address', $params);
+			$call = $this->fetchFromTokenpassAPI('POST', 'tca/address', $params, $oauth_token);
 		}
 		catch(Exception $e){
 			self::$errors[] = $e->getMessage();
@@ -363,9 +357,8 @@ class TokenpassAPI extends TokenlyAPI
 
 		try{
             $params = [];
-			$params['oauth_token'] = $oauth_token;
 			$params['signature'] = $signature;
-			$call = $this->fetchFromTokenpassAPI('POST', 'tca/address/'.$address, $params);
+			$call = $this->fetchFromTokenpassAPI('POST', 'tca/address/'.$address, $params, $oauth_token);
 		}
 		catch(Exception $e){
 			self::$errors[] = $e->getMessage();
@@ -388,7 +381,6 @@ class TokenpassAPI extends TokenlyAPI
 
 		try{
 			$params = [];
-			$params['oauth_token'] = $oauth_token;
 			if($label !== null){
 				$params['label'] = $label;
 			}
@@ -398,7 +390,7 @@ class TokenpassAPI extends TokenlyAPI
 			if($active !== null){
 				$params['active'] = $active;
 			}
-			$call = $this->fetchFromTokenpassAPI('PATCH', 'tca/address/'.$address, $params);
+			$call = $this->fetchFromTokenpassAPI('PATCH', 'tca/address/'.$address, $params, $oauth_token);
 		}
 		catch(Exception $e){
 			self::$errors[] = $e->getMessage();
@@ -420,8 +412,7 @@ class TokenpassAPI extends TokenlyAPI
 
 		try{
             $params = [];
-			$params['oauth_token'] = $oauth_token;
-			$call = $this->fetchFromTokenpassAPI('DELETE', 'tca/address/'.$address, $params);
+			$call = $this->fetchFromTokenpassAPI('DELETE', 'tca/address/'.$address, $params, $oauth_token);
 		}
 		catch(Exception $e){
 			self::$errors[] = $e->getMessage();
@@ -686,9 +677,9 @@ class TokenpassAPI extends TokenlyAPI
     public function getCombinedPublicBalances($oauth_token, $refresh = false)
     {
         try {
-            $params = ['oauth_token' => $oauth_token];
+            $params = [];
             if ($refresh) { $params['refresh'] = '1'; }
-            $response = $this->fetchFromTokenpassAPI('GET', 'tca/public/balances', $params);
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/public/balances', $params, $oauth_token);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -700,9 +691,9 @@ class TokenpassAPI extends TokenlyAPI
     public function getCombinedProtectedBalances($oauth_token, $refresh = false)
     {
         try {
-            $params = ['oauth_token' => $oauth_token];
+            $params = [];
             if ($refresh) { $params['refresh'] = '1'; }
-            $response = $this->fetchFromTokenpassAPI('GET', 'tca/protected/balances', $params);
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/protected/balances', $params, $oauth_token);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -714,8 +705,8 @@ class TokenpassAPI extends TokenlyAPI
     public function getChats($oauth_token)
     {
         try {
-            $params = ['oauth_token' => $oauth_token];
-            $response = $this->fetchFromTokenpassAPI('GET', 'tca/messenger/chats', $params);
+            $params = [];
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/messenger/chats', $params, $oauth_token);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -727,8 +718,8 @@ class TokenpassAPI extends TokenlyAPI
     public function joinChat($oauth_token, $chat_id)
     {
         try {
-            $params = ['oauth_token' => $oauth_token];
-            $response = $this->fetchFromTokenpassAPI('POST', 'tca/messenger/roster/'.$chat_id, $params);
+            $params = [];
+            $response = $this->fetchFromTokenpassAPI('POST', 'tca/messenger/roster/'.$chat_id, $params, $oauth_token);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -743,8 +734,8 @@ class TokenpassAPI extends TokenlyAPI
     public function getChat($oauth_token, $chat_uuid)
     {
         try {
-            $params = ['oauth_token' => $oauth_token];
-            $response = $this->fetchFromTokenpassAPI('GET', '/chat/'.$chat_uuid, $params);
+            $params = [];
+            $response = $this->fetchFromTokenpassAPI('GET', '/chat/'.$chat_uuid, $params, $oauth_token);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -762,8 +753,8 @@ class TokenpassAPI extends TokenlyAPI
     public function createChat($oauth_token, $create_vars)
     {
         try {
-            $params = ['oauth_token' => $oauth_token];
-            $response = $this->fetchFromTokenpassAPI('POST', '/chats', $params);
+            $params = [];
+            $response = $this->fetchFromTokenpassAPI('POST', '/chats', $params, $oauth_token);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -782,8 +773,8 @@ class TokenpassAPI extends TokenlyAPI
     public function editChat($oauth_token, $chat_uuid, $update_vars)
     {
         try {
-            $params = array_merge($update_vars, ['oauth_token' => $oauth_token]);
-            $response = $this->fetchFromTokenpassAPI('POST', '/chat/'.$chat_uuid, $params);
+            $params = array_merge($update_vars, []);
+            $response = $this->fetchFromTokenpassAPI('POST', '/chat/'.$chat_uuid, $params, $oauth_token);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -795,8 +786,8 @@ class TokenpassAPI extends TokenlyAPI
     public function getChatPrivileges($oauth_token, $chat_id)
     {
         try {
-            $params = ['oauth_token' => $oauth_token];
-            $response = $this->fetchFromTokenpassAPI('GET', 'tca/messenger/chat/'.$chat_id, $params);
+            $params = [];
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/messenger/chat/'.$chat_id, $params, $oauth_token);
         } catch (TokenpassAPIException $e) {
             self::$errors[] = $e->getMessage();
             return false;
@@ -1101,10 +1092,16 @@ class TokenpassAPI extends TokenlyAPI
     // ------------------------------------------------------------------------
 
     protected function fetchFromPublicTokenpassAPI($method, $path, $parameters=[]) {
-        return $this->fetchFromTokenpassAPI($method, $path, $parameters, ['public' => true]);
+        return $this->fetchFromTokenpassAPI($method, $path, $parameters, null, ['public' => true]);
     }
 
-    protected function fetchFromTokenpassAPI($method, $path, $parameters=[], $options=[]) {
+    protected function fetchFromTokenpassAPI($method, $path, $parameters=[], $oauth_token=null, $options=[]) {
+        // use a Bearer token
+        if ($oauth_token !== null AND strlen($oauth_token)) {
+            $options['headers'] = isset($options['headers']) ? $options['headers'] : [];
+            $options['headers']['Authorization'] = "Bearer ".$oauth_token;
+        }
+
         $url = '/api/v1/'.ltrim($path, '/');
         return $this->fetchFromTokenpass($method, $url, $parameters, 'json', $options);
     }
