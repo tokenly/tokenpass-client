@@ -3,7 +3,7 @@
 namespace Tokenly\TokenpassClient\Provider;
 
 use Exception;
-use Illuminate\Support\ServiceProvider;
+use Laravel\Socialite\SocialiteServiceProvider;
 use Tokenly\TokenpassClient\Socialite\TokenpassSocialiteManager;
 use Tokenly\TokenpassClient\Tokenpass;
 use Tokenly\TokenpassClient\TokenpassAPI;
