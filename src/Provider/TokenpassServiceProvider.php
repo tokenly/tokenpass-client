@@ -11,7 +11,7 @@ use Tokenly\TokenpassClient\TokenpassAPI;
 /**
 * 
 */
-class TokenpassServiceProvider extends ServiceProvider
+class TokenpassServiceProvider extends SocialiteServiceProvider
 {
     
     public function boot() {
