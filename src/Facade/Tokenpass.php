@@ -12,7 +12,7 @@ class Tokenpass extends Facade
 {
     
     protected static function getFacadeAccessor() { 
-        return 'tokenpass';
+        return '\Tokenly\TokenpassClient\Tokenpass';
     }
 
 }
