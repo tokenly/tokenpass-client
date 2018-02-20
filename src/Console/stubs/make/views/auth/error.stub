@@ -1,0 +1,25 @@
+@extends('layouts.app')
+
+@section('body_content')
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-danger">
+              <div class="panel-heading">
+                <h3 class="panel-title">There was an error</h3>
+              </div>
+              <div class="panel-body">
+                    {{ $errorMessage }}
+              </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <a href="{{ route('tokenpass.login') }}" class="btn btn-raised btn-primary">Try Again?</a>
+        </div>
+    </div>
+
+</div>
+@endsection

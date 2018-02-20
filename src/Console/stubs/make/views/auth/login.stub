@@ -1,0 +1,23 @@
+@extends('layouts.app')
+
+@section('body_content')
+
+@include('partials.notifications')
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                <h3 class="panel-title">Login</h3>
+              </div>
+              <div class="panel-body">
+                    <a href="{{ route('tokenpass.authorize') }}" class="btn btn-raised btn-primary">Login Now With Tokenpass</a>
+              </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@endsection

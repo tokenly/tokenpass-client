@@ -1,13 +1,24 @@
 <?php
 
 return [
+    // scopes to authenticate with
+    'scopes' => env('TOKENPASS_AUTH_SCOPES', 'user,tca'),
+
     // Enter your client id and client secret from Tokenpass here
-    'client_id'     => env('TOKENPASS_CLIENT_ID',           'YOUR_TOKENPASS_CLIENT_ID_HERE'),
-    'client_secret' => env('TOKENPASS_CLIENT_SECRET',       'YOUR_TOKENPASS_CLIENT_SECRET_HERE'),
+    'client_id' => env('TOKENPASS_CLIENT_ID', null),
+    'client_secret' => env('TOKENPASS_CLIENT_SECRET', null),
+
+    // for privileged admin Tokenpass access
+    'privileged_client_id' => env('TOKENPASS_PRIVILEGED_CLIENT_ID', null),
+    'privileged_client_secret' => env('TOKENPASS_PRIVILEGED_CLIENT_SECRET', null),
 
     // this is the URL that Tokenpass uses to redirect the user back to your application
-    'redirect'      => env('TOKENPASS_REDIRECT_URI',        'https://YourSiteHere.com/account/authorize/callback'),
+    //   e.g. https://YourSiteHere.com/account/authorize/callback
+    'redirect_uri' => env('TOKENPASS_REDIRECT_URI', env('APP_URL', 'http://127.0.0.1').'/account/authorize/callback'),
 
     // this is the Tokenpass URL
-    'base_url'      => rtrim(env('TOKENPASS_PROVIDER_HOST', 'https://tokenpass.tokenly.com'), '/'),
+    'tokenpass_url' => rtrim(env('TOKENPASS_PROVIDER_HOST', 'https://tokenpass.tokenly.com'), '/'),
+
+    // route prefix
+    'route_prefix' => env('TOKENPASS_ROUTE_PREFIX', 'account'),
 ];

@@ -75,7 +75,6 @@ class TokenpassProvider extends AbstractProvider implements ProviderInterface
             'username' => $user['username'],
             'name'     => array_get($user, 'name'),
             'email'    => array_get($user, 'email'),
-            // 'avatar' => $user['avatar_url'],
         ]);
     }
 

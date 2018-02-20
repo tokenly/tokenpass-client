@@ -16,28 +16,19 @@ class TokenpassAPI extends TokenlyAPI
     protected $privileged_client_id = null;
     protected $privileged_client_secret = null;
 
-	function __construct() {
-		if(function_exists('env')){
-            $client_id                      = env('TOKENPASS_CLIENT_ID');
-            $client_secret                  = env('TOKENPASS_CLIENT_SECRET');
 
-            $this->privileged_client_id     = env('TOKENPASS_PRIVILEGED_CLIENT_ID');
-            $this->privileged_client_secret = env('TOKENPASS_PRIVILEGED_CLIENT_SECRET');
 
-            $api_url                        = env('TOKENPASS_PROVIDER_HOST');
+	function __construct($client_id, $client_secret, $privileged_client_id, $privileged_client_secret, $tokenpass_url, $redirect_uri) {
 
-            $this->redirect_uri             = env('TOKENPASS_REDIRECT_URI');
-		}
-		else{
-            $client_id           = (defined('TOKENPASS_CLIENT_ID')     ? constant('TOKENPASS_CLIENT_ID')     : null);
-            $api_url             = (defined('TOKENPASS_PROVIDER_HOST') ? constant('TOKENPASS_PROVIDER_HOST') : null);
-            $client_secret       = (defined('TOKENPASS_CLIENT_SECRET') ? constant('TOKENPASS_CLIENT_SECRET') : null);
-
-            $this->redirect_uri  = (defined('TOKENPASS_REDIRECT_URI')  ? constant('TOKENPASS_REDIRECT_URI')  : null);
-		}
+        $this->client_id = $client_id;
+        $this->client_secret = $client_secret;
+        $this->privileged_client_id = $privileged_client_id;
+        $this->privileged_client_secret = $privileged_client_secret;
+        $this->tokenpass_url = $tokenpass_url;
+        $this->redirect_uri = $redirect_uri;
 
         $authentication_generator = new Generator();
-        parent::__construct($api_url, $authentication_generator, $client_id, $client_secret);
+        parent::__construct($tokenpass_url, $authentication_generator, $client_id, $client_secret);
 	}
 
     public function clearErrors() {

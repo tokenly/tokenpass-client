@@ -1,0 +1,39 @@
+@if (count($errors) > 0)
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="alert alert-danger">
+                <ul class="list-unstyled">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
+@if (session('status'))
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="alert alert-info">
+                {{ session('status') }}
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
+@if (session('warning'))
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="alert alert-warning">
+                {{ session('warning') }}
+            </div>
+        </div>
+    </div>
+</div>
+@endif

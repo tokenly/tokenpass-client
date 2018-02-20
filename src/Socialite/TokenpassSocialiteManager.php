@@ -22,18 +22,6 @@ class TokenpassSocialiteManager extends SocialiteManager
     }
 
     /**
-     * Get the default driver name.
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return string
-     */
-    public function getDefaultDriver()
-    {
-        return 'tokenpass';
-    }
-
-    /**
      * Build an OAuth 2 provider instance.
      *
      * @param  string  $provider
@@ -44,12 +32,24 @@ class TokenpassSocialiteManager extends SocialiteManager
     {
         $provider = new $provider(
             $this->app['request'], $config['client_id'],
-            $config['client_secret'], $config['redirect']
+            $config['client_secret'], $config['redirect_uri']
         );
 
-        $provider->setBaseURL($config['base_url']);
+        $provider->setBaseURL($config['tokenpass_url']);
 
         return $provider;
+    }
+
+    /**
+     * Get the default driver name.
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return string
+     */
+    public function getDefaultDriver()
+    {
+        return 'tokenpass';
     }
 
 }

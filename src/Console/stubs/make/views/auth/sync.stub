@@ -1,0 +1,23 @@
+@extends('layouts.app')
+
+@section('body_content')
+
+@include('partials.notifications')
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Sync</h3>
+              </div>
+              <div class="panel-body">
+                    Your account was synced
+              </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@endsection

@@ -2,45 +2,57 @@
 
 namespace Tokenly\TokenpassClient\Provider;
 
-use Exception;
-use Laravel\Socialite\SocialiteServiceProvider;
+use Illuminate\Support\ServiceProvider;
+use Tokenly\TokenpassClient\Console\MakeTokenpassAuthCommand;
+use Tokenly\TokenpassClient\Contracts\TokenpassUserRespositoryContract;
 use Tokenly\TokenpassClient\Socialite\TokenpassSocialiteManager;
-use Tokenly\TokenpassClient\Tokenpass;
 use Tokenly\TokenpassClient\TokenpassAPI;
 
 /**
-* 
-*/
-class TokenpassServiceProvider extends SocialiteServiceProvider
+ *
+ */
+class TokenpassServiceProvider extends ServiceProvider
 {
-    
-    public function boot() {
-        $config_source = realpath(__DIR__.'/../../config/tokenpass.php');
-        $this->publishes([$config_source => config_path('tokenpass.php')], 'config');
-    }
 
-    public function register() {
-        $this->app->bind('tokenpass', function($app) {
-            return new Tokenpass();
+    public function register()
+    {
+        // bind classes
+        $this->app->bind(TokenpassAPI::class, function ($app) {
+            $config = config('tokenpass');
+            return new TokenpassAPI($config['client_id'], $config['client_secret'], $config['privileged_client_id'], $config['privileged_client_secret'], $config['tokenpass_url'], $config['redirect_uri']);
         });
 
-        $this->app->bind('Tokenly\TokenpassClient\TokenpassAPI', function($app) {
-            return new TokenpassAPI();
-        });
 
-        $this->app->bind('Laravel\Socialite\Contracts\Factory', function ($app) {
+        // extend the Socialite Factory to add our Socialite Manager
+        $this->app->extend('Laravel\Socialite\Contracts\Factory', function($service, $app) {
             return new TokenpassSocialiteManager($app);
         });
+
+        // bind default TokenpassUserRespositoryContract
+        if (!$this->app->bound(TokenpassUserRespositoryContract::class)) {
+            $this->app->bind(TokenpassUserRespositoryContract::class, 'App\Repositories\UserRepository');
+        }
     }
 
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
+    public function boot()
     {
-        return ['Laravel\Socialite\Contracts\Factory'];
+        // config
+        $config_source = __DIR__ . '/../../config/tokenpass.php';
+        $this->mergeConfigFrom($config_source, 'tokenpass');
+        $this->publishes([$config_source => config_path('tokenpass.php')], 'tokenpass');
+
+        // console commands
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                MakeTokenpassAuthCommand::class,
+            ]);
+        }
+
+        // migrations
+        $this->loadMigrationsFrom(__DIR__ . '/../../migrations');
+
+        // routes
+        $this->loadRoutesFrom(__DIR__ . '/../../routes/tokenpass-routes.php');
     }
 
 }

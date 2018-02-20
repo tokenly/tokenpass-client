@@ -72,10 +72,10 @@ class AccountController extends Controller
 
         try {
             // check for an error returned from Tokenpass
-            $error_description = Tokenpass::checkForError($request);
-            if ($error_description) {
-                return view('account.authorization-failed', ['error_msg' => $error_description]);
-            }
+            // $error_description = Tokenpass::checkForError($request);
+            // if ($error_description) {
+            //     return view('account.authorization-failed', ['error_msg' => $error_description]);
+            // }
 
 
             // retrieve the user from Tokenpass

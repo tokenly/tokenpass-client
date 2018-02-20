@@ -1,0 +1,35 @@
+@extends('layouts.base')
+
+@section('navigation')
+<nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{{ route('tokenpass.home') }}">
+        My App
+      </a>
+    </div>
+
+    <ul class="nav navbar-nav">
+    </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{$user['username']}} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{{ route('tokenpass.logout') }}">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+
+  </div>
+</nav>
+@endsection
+
+
+@section('body')
+<div class="container">
+  @yield('body_content')
+</div>
+@endsection
+
+@yield('page_scripts')
