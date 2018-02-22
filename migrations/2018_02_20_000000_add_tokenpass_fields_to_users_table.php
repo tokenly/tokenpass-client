@@ -25,7 +25,9 @@ class AddTokenpassFieldsToUsersTable extends Migration
      */
     public function down()
     {
-        $table->dropColumn('tokenly_uuid');
-        $table->dropColumn('oauth_token');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('tokenly_uuid');
+            $table->dropColumn('oauth_token');
+        });
     }
 }
