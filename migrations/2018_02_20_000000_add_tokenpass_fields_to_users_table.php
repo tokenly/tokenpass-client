@@ -13,8 +13,12 @@ class AddTokenpassFieldsToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->char('tokenly_uuid', 36)->nullable()->unique();
-            $table->text('oauth_token')->nullable();
+            if (!Schema::hasColumn($table->getTable(), 'tokenly_uuid')) {
+                $table->char('tokenly_uuid', 36)->nullable()->unique();
+            }
+            if (!Schema::hasColumn($table->getTable(), 'oauth_token')) {
+                $table->text('oauth_token')->nullable();
+            }
         });
     }
 
@@ -25,9 +29,5 @@ class AddTokenpassFieldsToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('tokenly_uuid');
-            $table->dropColumn('oauth_token');
-        });
     }
 }
