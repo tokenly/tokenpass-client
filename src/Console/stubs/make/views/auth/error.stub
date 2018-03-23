@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-md-8">
-            <a href="{{ route('tokenpass.login') }}" class="btn btn-raised btn-primary">Try Again?</a>
+            <a href="{{ route('login') }}" class="btn btn-raised btn-primary">Try Again?</a>
         </div>
     </div>
 
