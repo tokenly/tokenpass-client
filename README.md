@@ -27,6 +27,10 @@ TOKENPASS_CLIENT_SECRET=Kyours3c4etKeYH3re23mste0xmPdSja36aXLd02
 TOKENPASS_PROVIDER_HOST=https://tokenpass.tokenly.com
 ```
 
-The application container must resolve the following contract:
-- `TokenpassUserRespositoryContract` (defaults to `App\Repositories\UserRepository`).  You can use the Tokenly\TokenpassClient\Concerns\FindsByTokenpassUuid trait to implement the lookup by tokenly uuid.
+## Additional Installation Steps
+- The application container must resolve the interface `TokenpassUserRespositoryContract`.  It defaults to `App\Repositories\UserRepository`.
+- Add the `Tokenly\TokenpassClient\Concerns\FindsByTokenpassUuid` trait to the UserRepository to implement the lookup by tokenly uuid.
+- run `artisan migrate` (or `artisan migrate --step`) to add the necessary fields to the users table
+
+
 
