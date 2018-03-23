@@ -55,6 +55,7 @@ class TokenpassAuthorizer
             $username = $oauth_user->user['username'];
             $name = $oauth_user->user['name'];
             $email = $oauth_user->user['email'];
+            $confirmed_email = $oauth_user->user['email_is_confirmed'] ? $email : null;
 
             // find an existing user based on the credentials provided
             $existing_user = $this->user_repository->findByTokenlyUuid($tokenly_uuid);
@@ -68,6 +69,7 @@ class TokenpassAuthorizer
                     'name' => $name,
                     'username' => $username,
                     'email' => $email,
+                    'confirmed_email' => $confirmed_email,
                 ]);
 
                 // login
@@ -82,6 +84,7 @@ class TokenpassAuthorizer
                     'name' => $name,
                     'username' => $username,
                     'email' => $email,
+                    'confirmed_email' => $confirmed_email,
                 ]);
 
                 // fire event
