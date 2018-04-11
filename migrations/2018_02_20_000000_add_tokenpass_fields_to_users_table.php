@@ -13,6 +13,9 @@ class AddTokenpassFieldsToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
+            if (!Schema::hasColumn($table->getTable(), 'confirmed_email')) {
+                $table->string('confirmed_email')->nullable()->unique();
+            }
             if (!Schema::hasColumn($table->getTable(), 'tokenly_uuid')) {
                 $table->char('tokenly_uuid', 36)->nullable()->unique();
             }
