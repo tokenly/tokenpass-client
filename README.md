@@ -28,9 +28,12 @@ TOKENPASS_PROVIDER_HOST=https://tokenpass.tokenly.com
 ```
 
 ## Additional Installation Steps
+- follow the tokenly/laravel-api-provider installation steps
 - The application container must resolve the interface `TokenpassUserRespositoryContract`.  It defaults to `App\Repositories\UserRepository`.
 - Add the `Tokenly\TokenpassClient\Concerns\FindsByTokenpassUuid` trait to the UserRepository to implement the lookup by tokenly uuid.
 - run `artisan migrate` (or `artisan migrate --step`) to add the necessary fields to the users table
+- make sure `config/auth.php` points to the currect `User` model class
+- your `User` class should implement `APIPermissionedUserContract`
 
 
 
