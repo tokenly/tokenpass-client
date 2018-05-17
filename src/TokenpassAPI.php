@@ -60,6 +60,30 @@ class TokenpassAPI extends TokenlyAPI
 		}
 		return $call['result'];
 	}
+
+    /**
+     * Checks token access by email address only
+     * This inludes any promises sent to an email address that is not registered yet
+     * This is a privileged API method and not available to OAUth clients
+     * @param  string $email
+     * @param  array  $rules
+     * @return bool 
+     */
+    public function checkTokenAccessByEmail($email, $rules)
+    {
+        try{
+            $params = $this->normalizeGetParameters($rules);
+            $call = $this->fetchFromTokenpassAPIWithPrivilegedAuth('GET', 'tca/checkemail/'.$email, $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
+        return $call['result'];
+    }
 	
 	public function getPublicAddresses($username, $refresh=false)
 	{
@@ -1112,7 +1136,6 @@ class TokenpassAPI extends TokenlyAPI
     }
 
     protected function fetchFromTokenpassAPIWithPrivilegedAuth($method, $path, $parameters=[]) {
-        $exception = null;
         try {
             // save the client id and secret
             $old_client_id       = $this->client_id;
@@ -1123,15 +1146,13 @@ class TokenpassAPI extends TokenlyAPI
             $this->client_secret = $this->privileged_client_secret;
 
             $result = $this->fetchFromTokenpassAPI($method, $path, $parameters);
-        } catch (Exception $e) {
-            $exception = $e;
+        } finally {
+            // restore the client id and secret
+            //   even if an exception was thrown
+            $this->client_id     = $old_client_id;
+            $this->client_secret = $old_client_secret;
         }
 
-        // restore the client id and secret
-        $this->client_id     = $old_client_id;
-        $this->client_secret = $old_client_secret;
-
-        if ($exception !== null) { throw $exception; }
         return $result;
     }
 
