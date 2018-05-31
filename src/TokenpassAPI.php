@@ -564,7 +564,7 @@ class TokenpassAPI extends TokenlyAPI
     public function deleteProvisionalSource($address)
     {
         try{
-            $call = $this->fetchFromTokenpassAPI('DELETE', 'tca/provisional/'.$address, $params);
+            $call = $this->fetchFromTokenpassAPI('DELETE', 'tca/provisional/'.$address);
         }
         catch(TokenpassAPIException $e){
             self::$errors[] = $e->getMessage();
