@@ -636,6 +636,22 @@ class TokenpassAPI extends TokenlyAPI
         return $call['list'];
     }
 
+    public function getPromisedTransactionListByEmailAddress($email)
+    {
+        try{
+            $params = [];
+            $call = $this->fetchFromTokenpassAPI('GET', 'tca/provisional/byemail/'.$email, $params);
+        }
+        catch(TokenpassAPIException $e){
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        if(!isset($call['result'])){
+            return false;
+        }
+        return $call['list'];
+    }
+
     public function deletePromisedTransaction($id)
     {
         try{
