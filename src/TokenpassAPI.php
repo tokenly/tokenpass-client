@@ -218,6 +218,7 @@ class TokenpassAPI extends TokenlyAPI
 
         return $result;
     }
+    /* DEPRECATED */
 
     public function getOAuthAuthorizationCodeWithCredentials($username, $password, $scopes)
     {
@@ -254,22 +255,24 @@ class TokenpassAPI extends TokenlyAPI
         return $result['code'];
     }
 
-    public function getOAuthAccessToken($code)
+
+    public function getOAuthAccessToken($username, $password, $scopes)
     {
         $form_data = [
-            'grant_type'    => 'authorization_code',
-            'code'          => $code,
-            'client_id'     => $this->client_id,
-            'client_secret' => $this->client_secret,
-            'redirect_uri'  => $this->redirect_uri,
+            'grant_type' => 'password',
+            'client_id'     => $this->privileged_client_id,
+            'client_secret' => $this->privileged_client_secret,
+            'username'  => $username,
+            'password'  => $password,
+            'scopes'  => $scopes,
         ];
-		
-		try{
-			$result = $this->fetchFromOAuth('POST', 'oauth/access-token', $form_data);
-		}
-		catch(TokenpassAPIException $e){
-			throw new \Exception($e->getMessage());
-		}
+
+        try {
+            $result = $this->fetchFromOAuth('POST', '/oauth/token', $form_data);
+        }
+        catch(TokenpassAPIException $e){
+            throw new \Exception($e->getMessage());
+        }
         if (isset($result['error']) AND trim($result['error']) != ''){
             throw new \Exception($result['error']);
         }
