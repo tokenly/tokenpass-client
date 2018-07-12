@@ -11,13 +11,18 @@ class TokenpassAPI extends TokenlyAPI
     public static $errors = array();
     protected $privileged_client_id = null;
     protected $privileged_client_secret = null;
-    function __construct($client_id, $client_secret, $privileged_client_id, $privileged_client_secret, $tokenpass_url, $redirect_uri) {
+    protected $oauth_client_id = null;
+    protected $oauth_client_secret = null;
+
+    function __construct($client_id, $client_secret, $privileged_client_id, $privileged_client_secret, $tokenpass_url, $redirect_uri, $oauth_client_id=null, $oauth_client_secret=null) {
         $this->client_id = $client_id;
         $this->client_secret = $client_secret;
         $this->privileged_client_id = $privileged_client_id;
         $this->privileged_client_secret = $privileged_client_secret;
         $this->tokenpass_url = $tokenpass_url;
         $this->redirect_uri = $redirect_uri;
+        $this->oauth_client_id = $oauth_client_id;
+        $this->oauth_client_secret = $oauth_client_secret;
         $authentication_generator = new Generator();
         parent::__construct($tokenpass_url, $authentication_generator, $client_id, $client_secret);
     }
@@ -200,8 +205,8 @@ class TokenpassAPI extends TokenlyAPI
     {
         $form_data = [
             'grant_type' => 'password',
-            'client_id'     => $this->privileged_client_id,
-            'client_secret' => $this->privileged_client_secret,
+            'client_id'     => $this->oauth_client_id,
+            'client_secret' => $this->oauth_client_secret,
             'username'  => $username,
             'password'  => $password,
             'scopes'  => $scopes,

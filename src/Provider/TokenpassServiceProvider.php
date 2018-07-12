@@ -19,7 +19,7 @@ class TokenpassServiceProvider extends ServiceProvider
         // bind classes
         $this->app->bind(TokenpassAPI::class, function ($app) {
             $config = config('tokenpass');
-            return new TokenpassAPI($config['client_id'], $config['client_secret'], $config['privileged_client_id'], $config['privileged_client_secret'], $config['tokenpass_url'], $config['redirect_uri']);
+            return new TokenpassAPI($config['client_id'], $config['client_secret'], $config['privileged_client_id'], $config['privileged_client_secret'], $config['tokenpass_url'], $config['redirect_uri'], $config['oauth_client_id'], $config['oauth_client_secret']);
         });
 
 
