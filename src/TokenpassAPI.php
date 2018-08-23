@@ -577,10 +577,13 @@ class TokenpassAPI extends TokenlyAPI
         }
         return $call['tx'];
     }
-    public function getPromisedTransactionList()
+    public function getPromisedTransactionList($destination = null)
     {
         try{
             $params = [];
+            if ($destination !== null) {
+                $params['destination'] = $destination;
+            }
             $call = $this->fetchFromTokenpassAPI('GET', 'tca/provisional/tx', $params);
         }
         catch(TokenpassAPIException $e){
