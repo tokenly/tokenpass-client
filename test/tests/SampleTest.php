@@ -1,7 +1,7 @@
 <?php
 
 use \Exception;
-use \PHPUnit_Framework_Assert as PHPUnit;
+use \PHPUnit\Framework\Assert as PHPUnit;
 
 /*
 * 
