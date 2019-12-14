@@ -454,7 +454,6 @@ class TokenpassAPI extends TokenlyAPI
             $params = [];
             $params['address'] = $address;
             $params['type'] = $chain;
-            $params['type'] = $type;
             $params['proof'] = $proof;
             $params['assets'] = $assets;
             $valid_extra = array('assign_user', 'assign_user_hash', 'assign_user_label');
