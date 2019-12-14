@@ -442,11 +442,19 @@ class TokenpassAPI extends TokenlyAPI
         return $call;
     }
 
-    public function registerProvisionalSource($address, $proof, $assets = null, $extra_opts = array())
+    public function registerProvisionalSource($address, $chain = 'bitcoin', $proof = null, $assets = null, $extra_opts = array())
     {
+		if($chain == 'counterparty'){
+			$chain = 'bitcoin';
+		}
+		if($chain == 'counterpartyTestnet'){
+			$chain = 'counterparty';
+		}
         try{
             $params = [];
             $params['address'] = $address;
+            $params['type'] = $chain;
+            $params['type'] = $type;
             $params['proof'] = $proof;
             $params['assets'] = $assets;
             $valid_extra = array('assign_user', 'assign_user_hash', 'assign_user_label');
