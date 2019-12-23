@@ -311,7 +311,7 @@ class TokenpassAPI extends TokenlyAPI
         return $this->getPublicAddressDetails($username, $address);
     }
 
-    public function registerAddress($address, $oauth_token, $label = '', $public = false, $active = true)
+    public function registerAddress($address, $oauth_token, $label = '', $public = false, $active = true, $type = 'bitcoin')
     {
         try{
             $params = [];
@@ -319,6 +319,7 @@ class TokenpassAPI extends TokenlyAPI
             $params['label'] = $label;
             $params['public'] = $public;
             $params['active'] = $active;
+            $params['type'] = $type;
             $call = $this->fetchFromTokenpassAPI('POST', 'tca/address', $params, $oauth_token);
         }
         catch(Exception $e){
@@ -480,6 +481,9 @@ class TokenpassAPI extends TokenlyAPI
     }
     public function registerProvisionalSourceWithProof($address, $assets = null, $extra_opts = array())
     {
+		throw new Exception('Address signing with substation not yet implemented');
+		
+		/*
         $proof_message = $this->getProvisionalSourceProofMessage($address);
         $xchain = app('Tokenly\XChainClient\Client');
         $proof = false;
@@ -489,6 +493,7 @@ class TokenpassAPI extends TokenlyAPI
         }
         $proof = $proof['result'];
         return $this->registerProvisionalSource($address, $proof, $assets, $extra_opts);
+        * */
     }
     public function getProvisionalSourceList()
     {
@@ -542,7 +547,7 @@ class TokenpassAPI extends TokenlyAPI
         }
         return $call['result'];
     }
-    public function promiseTransaction($source, $destination, $asset, $quantity, $expiration, $txid = null, $fingerprint = null, $ref = null)
+    public function promiseTransaction($source, $destination, $asset, $quantity, $expiration, $txid = null, $fingerprint = null, $ref = null, $chain = 'bitcoin', $protocol = 'counterparty')
     {
         try{
             $params = [];
@@ -551,6 +556,8 @@ class TokenpassAPI extends TokenlyAPI
             $params['asset'] = $asset;
             $params['quantity'] = $quantity;
             $params['expiration'] = $expiration;
+            $params['chain'] = $chain;
+            $params['protocol'] = $protocol;
             if($txid != null){
                 $params['txid'] = $txid;
             }
