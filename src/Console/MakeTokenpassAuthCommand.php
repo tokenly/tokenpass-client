@@ -3,11 +3,9 @@
 namespace Tokenly\TokenpassClient\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Console\DetectsApplicationNamespace;
 
 class MakeTokenpassAuthCommand extends Command
 {
-    use DetectsApplicationNamespace;
 
     /**
      * The name and signature of the console command.
