@@ -482,7 +482,7 @@ class TokenpassAPI extends TokenlyAPI
     public function registerProvisionalSourceWithProof($address, $assets = null, $extra_opts = array())
     {
 		throw new Exception('Address signing with substation not yet implemented');
-		
+
 		/*
         $proof_message = $this->getProvisionalSourceProofMessage($address);
         $xchain = app('Tokenly\XChainClient\Client');
@@ -1075,11 +1075,14 @@ class TokenpassAPI extends TokenlyAPI
         return $this->fetchFromTokenpassAPI($method, $path, $parameters, null, ['public' => true]);
     }
     protected function fetchFromTokenpassAPI($method, $path, $parameters=[], $oauth_token=null, $options=[]) {
+        /*
         // use a Bearer token
         if ($oauth_token !== null AND strlen($oauth_token)) {
             $options['headers'] = isset($options['headers']) ? $options['headers'] : [];
             $options['headers']['Authorization'] = "Bearer ".$oauth_token;
         }
+        */
+        $parameters['oauth_token'] = $oauth_token;
         $url = '/api/v1/'.ltrim($path, '/');
         return $this->fetchFromTokenpass($method, $url, $parameters, 'json', $options);
     }
