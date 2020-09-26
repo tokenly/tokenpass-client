@@ -1,11 +1,12 @@
 <?php
 namespace Tokenly\TokenpassClient;
+
 use Exception;
 use Requests;
-use Tokenly\APIClient\TokenlyAPI;
-use Tokenly\HmacAuth\Generator;
+use GuzzleHttp\Client as HttpClient;
 use Tokenly\TokenpassClient\Exception\TokenpassAPIException;
-class TokenpassAPI extends TokenlyAPI
+
+class TokenpassAPI
 {
     public $redirect_uri  = false;
     public static $errors = array();
@@ -23,9 +24,8 @@ class TokenpassAPI extends TokenlyAPI
         $this->redirect_uri = $redirect_uri;
         $this->oauth_client_id = $oauth_client_id;
         $this->oauth_client_secret = $oauth_client_secret;
-        $authentication_generator = new Generator();
-        parent::__construct($tokenpass_url, $authentication_generator, $client_id, $client_secret);
     }
+
     public function clearErrors() {
         return self::$errors = [];
     }
@@ -1115,4 +1115,44 @@ class TokenpassAPI extends TokenlyAPI
         }
         return $result;
     }
+
+
+    public function call($method, $endpoint, $params = [], $options = [])
+    {
+      //start client
+      $client = new HttpClient();
+
+      $data = $options;
+      $data['json'] = $params;
+
+      //generate a random nonce
+      $nonce = hash_hmac('sha256', random_bytes(256).time(), $this->client_secret);
+
+      $data['headers'] = [
+        'X-API-Key' => $this->client_id,
+        'X-API-Nonce' => $nonce,
+        'X-API-Signature' => hash_hmac('sha256', $nonce.json_encode($params), $this->client_secret)
+      ];
+
+      //send the request
+      try{
+        $response = $client->request($method, $this->tokenpass_url.'/'.ltrim($endpoint, '/'), $data);
+        if($response->getStatusCode() != 200){
+          throw new Exception('Invalid API endpoint status code');
+        }
+
+        //decode response
+        $json = json_decode($response->getBody(), true);
+        if(!is_array($json)){
+          throw new Exception('Invalid JSON response');
+        }
+      }
+      catch(Exception $e){
+        throw new Exception('Invalid response: '.$e->getMessage());
+      }
+
+      //return output
+      return $json;
+    }
+
 }
