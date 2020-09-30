@@ -30,14 +30,19 @@ class TokenpassSocialiteManager extends SocialiteManager
      */
     public function buildProvider($provider, $config)
     {
-        $provider = new $provider(
-            $this->app['request'], $config['client_id'],
-            $config['client_secret'], $config['redirect_uri']
-        );
+      if(!isset($config['redirect_uri']) AND isset($config['redirect'])){
+        $config['redirect_uri'] = $config['redirect'];
+      }
+      $provider = new $provider(
+          $this->app['request'], $config['client_id'],
+          $config['client_secret'], $config['redirect_uri']
+      );
 
+      if(isset($config['tokenpass_url'])){
         $provider->setBaseURL($config['tokenpass_url']);
+      }
 
-        return $provider;
+      return $provider;
     }
 
     /**
