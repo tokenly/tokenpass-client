@@ -13,8 +13,8 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "laravel/socialite": "^4",
-		    "guzzlehttp/guzzle": "~6.0",        
+        "laravel/socialite": "^5.2",
+	"guzzlehttp/guzzle": "~6.0",        
         "tokenly/api-client": "dev-master",
         "tokenly/laravel-event-log": "dev-master"
     },
