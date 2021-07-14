@@ -14,7 +14,7 @@ class TokenpassSocialiteManager extends SocialiteManager
      */
     protected function createTokenpassDriver()
     {
-        $config = $this->app['config']['tokenpass'];
+        $config = $this->config['tokenpass'];
 
         return $this->buildProvider(
             'Tokenly\TokenpassClient\Socialite\Two\TokenpassProvider', $config
@@ -34,7 +34,7 @@ class TokenpassSocialiteManager extends SocialiteManager
         $config['redirect_uri'] = $config['redirect'];
       }
       $provider = new $provider(
-          $this->app['request'], $config['client_id'],
+          request(), $config['client_id'],
           $config['client_secret'], $config['redirect_uri']
       );
 
