@@ -6,6 +6,12 @@ use Exception;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
 use Laravel\Socialite\Two\User;
+use GuzzleHttp\Client;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Contracts\Provider as ProviderContract;
 
 class TokenpassProvider extends AbstractProvider implements ProviderInterface
 {
