@@ -1116,6 +1116,18 @@ class TokenpassAPI
         return $result;
     }
 
+    public function getAssetInfo($asset, $chain)
+    {
+        try {
+            $params = [];
+            $response = $this->fetchFromTokenpassAPI('GET', 'tca/asset/'.$chain.'/'.$asset, $params);
+        } catch (TokenpassAPIException $e) {
+            self::$errors[] = $e->getMessage();
+            return false;
+        }
+        return $response;
+    }
+
 
     public function call($method, $endpoint, $params = [], $options = [])
     {
